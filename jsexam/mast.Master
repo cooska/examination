@@ -1,0 +1,47 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="mast.master.cs" Inherits="jsexam.mast" %>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="language" content="zh-CN">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1"> 
+<title>这就是街舞xx</title>
+    <meta name="Keywords" content="湘西州专业技术人员公需科目考试系统"/>
+    <meta name="Description" content="湘西州专业技术人员公需科目考试系统"/>
+	<link rel="stylesheet" type="text/css" href="css/p_css.css">
+    <script src="js/jquery.min.js"></script>
+    <script src="js/help.js"></script>
+</head>
+<body style="background:#fff">
+ <div class="MaskPaner"></div>
+ <div class="nav_right_top">
+   <div class="flt nav_r_top_title">这就是街舞xx</div>
+      <div  class="flr nrtl_msg">
+        <div class="flt"><%=UsName%></div>
+        <img class="flr" src="img/usimg2.png" height="50"/>
+     </div>
+     <div class="flr singout" onclick="sigout();">退 出 登 陆 </div>
+ </div>
+<div class="flt nav_left" style="background:#E8E9ED">
+    <ul>
+        <li class="nav_main">试题管理</li>
+        <a href="questionadd.aspx" ><li id="questionadd" class="nav_href">试题录入</li></a>
+        <a href="questionlist.aspx" ><li id="questionlist" class="nav_href">试题查询</li></a>
+        <li class="nav_main">知识点管理</li>
+        <a href="knowledgeadd.aspx" ><li id="knowledgeadd" class="nav_href">知识点录入</li></a>
+        <a href="knowledgepoint.aspx" ><li id="knowledgepoint" class="nav_href">知识点查询</li></a>
+        <li class="nav_main">考试管理</li>
+        <a href="outquestions.aspx" ><li id="outquestions" class="nav_href">智能出题</li></a>
+        <a href="Results.aspx" ><li class="nav_href">考试成绩查询</li></a>
+    </ul>
+</div>
+<div class="flt nav_right" style="height:100%;">
+    <div class="nav_right_title"><span style="margin-left:20px"></span></div>
+    
+    <div style="position:relative">
+        <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+      </asp:ContentPlaceHolder>
+    </div>
+</div>
+</body>
+</html>

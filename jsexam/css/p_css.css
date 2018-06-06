@@ -1,0 +1,102 @@
+﻿@charset "UTF-8";
+*{padding:0px;margin:0px;font-family:"微软雅黑"; border-collapse:collapse}
+*:focus {outline: none; }
+img{border:0;}
+a{text-decoration:none;outline:none;color:black}
+li{list-style:none;}
+.flt{float:left}
+.flr{float:right}
+.cb{clear: both}
+body{background:#E8E9ED;overflow:hidden;}
+/*遮罩*/
+.MaskPaner{position: absolute; background: black;opacity: 0.5;width: 100%;height: 100%;display:none;z-index: 1}
+/*全局*/
+.btn{border:1px solid #919191;background-color:#f5f5f5;color:#333; width:90px;height:26px;line-height:26px;text-align:center;cursor:pointer;}
+.btn:hover{background:#eee}
+/*登录页*/
+.loginpaner{margin:0 auto; border-radius: 8px 8px 0px 0px; margin-top:10%;height:450px;width:700px;background:#BF4E6A;color:white}
+.login_title{margin-left:60px;padding-top:60px;font-size:36px;font-weight:bold;}
+.login_tag{font-size:20px;margin-left:60px;margin-top:20px; letter-spacing: 2px}
+.login_input{margin-left: 60px;height: 40px;width: 500px;line-height: 40px;border: 0px;background: white}
+.login_input img{margin-left: 10px;margin-top: 4px;}
+.login_input input{margin-left: 4px; width: 452px;height: 40px;line-height: 40px;border:0px;background: white;font-size: 16px;}
+.nav_r_top_title{line-height: 60px; margin-left: 20px;font-size: 32px;letter-spacing: 4px}
+/*mast*/
+.nav_left{width: 220px;height: 100%;}
+.nav_right{background: white}
+.nav_right_top{background: #BF4E6A; height: 60px;width: 100%;color: white}
+.nav_right_title{height: 35px;line-height:35px;font-size:14px;color:#aaa;letter-spacing:2px; width: 100%;/*border-bottom: 1px solid #d5d8e0;*/}
+.nrtl_msg{line-height: 60px;height: 60px; width: 160px;cursor: pointer}
+.nrtl_msg div{width: 80px;text-align: right}
+.nrtl_msg img{margin-right: 20px;margin-top: 10px; height: 40px; }
+.singout{cursor: pointer;position: relative;height: 42px;line-height: 42px;border: 1px solid #bfc0c3; width: 110px;background: #fff;top: 60px;left:160px;color:#333;text-align: center; font-size: 14px;display:none}
+.singout:hover{background: #eee}
+.navl_title{width: 100%;height: 60px;line-height: 60px; font-size: 30px;letter-spacing: 1px;color:#5c5d5f;text-align: center}
+.nav_left ul{background: #E8E9ED}
+.nav_left ul li{list-style:none}
+.nav_left ul .nav_main{background: #d5d8e0; color: #333;font-size: 20px;letter-spacing: 4px;text-align: center;height: 36px;line-height: 36px;}
+.nav_left ul .nav_href{font-size: 16px;letter-spacing: 4px;text-align: center;height: 32px;line-height:32px;color: #333}
+.nav_left ul .nav_href:hover{background:#f5f5f5;color: #333}
+.liHover{background:#f5f5f5;color: #333}
+/*试题样式*/
+.quse_ul{margin-left:20px;margin-top:10px}
+.quse_ul li{list-style-type: upper-alpha;height:24px;line-height:24px;margin-bottom:12px;}
+.quse_ul li .li_ckbox{width:20px;margin-left:40px;margin-top:2px;}
+.quse_ul li input{float:left;height:24px;width:520px;font-size:14px;margin-left:2px;color:#333}
+.quse_ul li img{float:left; margin-left:20px; margin-top:4px; cursor:pointer;display:none}
+.quse_bottom{height:32px;line-height:32px;font-size:14px;background:#E8E9ED;color:#333}
+.quse_bottom td div{margin-left:10px}
+/*知识点样式*/
+.knowledge_ul{margin-left:20px;margin-top:10px}
+.knowledge_ul li{list-style-type:decimal;height:24px;line-height:24px;margin-bottom:12px;}
+.knowledge_ul li .li_ckbox{width:20px;margin-left:40px;margin-top:2px;}
+.knowledge_ul li input{float:left;height:24px;width:520px;font-size:14px;margin-left:2px;color:#333}
+.knowledge_ul li img{float:left; margin-left:20px; margin-top:4px; cursor:pointer;display:none}
+/*搜索条件区*/
+.condtionpaner{height:26px;line-height:26px;font-size:16px;margin-top:10px;color:#333}
+.condtionpaner div{margin-left:10px;line-height:26px;}
+.condtionpaner input{height:22px;line-height:22px;font-size:14px; margin-left:4px;margin-right:4px;}
+.condtionpaner select{height:26px;line-height:26px;font-size:14px; margin-left:4px;margin-right:4px;}
+.condtionpaner a{color:#007aff;font-weight:bold}
+/*表格*/
+.quse_tb{margin:0 auto; width: 1000px;min-width: 800px; color: #333;border:1px solid #919191}
+.quse_tb tr td{border:1px solid #919191;}
+.quse_head{height: 38px;line-height: 38px;background:#d5d8e0}
+.quse_head td{text-align: center;font-size: 16px;}
+.quse_search td{height: 28px;line-height: 28px; text-align: center;}
+.quse_search td select{border: 0px;height: 26px;}
+.quse_search td input{ width: 100%;line-height: 28px;height: 28px;color: #333;border:0px;}
+.quse_search td a{color:#007aff;font-weight:bold}
+.quse_list{height: 28px;line-height: 28px;}
+.quse_list td{text-align: center;font-size:14px}
+.quse_list:hover{background: #BF4E6A}
+.quse_list:hover td{color: white}
+.quse_list td a{color:#1f4ba4;font-size:14px}
+.quse_list:hover td a{color: white}
+/*弹窗*/
+.Edit_paner{position:absolute; left: 50%; margin-left: -384px;top:10%;  width: 688px;border: 1px solid #959595;background: white;display: none;  z-index: 999}
+.Edit_title{background: white}
+.Edit_title span{margin-left: 12px;height: 40px;line-height: 40px; font-size: 16px;letter-spacing: 2px}
+.Edit_Close{float: right;margin-right: 12px;cursor: pointer}
+.Edit_submit{ margin-right: 10px; margin-top: 10px; height: 38px;line-height: 38px;font-size: 14px}
+.Edit_submit a{cursor: pointer;color:#1f4ba4}
+/*分页样式*/
+.fy{float:right; margin-right:0px; font-size:16px;}
+.fy ul li{ float:left; margin-left:10px;list-style-type:none;background:white}
+.fya a{color:white; height:30px; line-height:30px; width:30px; text-align:center;font-size:12pt;}
+.p_sy{ width:80px; height:30px; line-height:30px; text-align:center; border:1px solid #dcdbdb}
+.p_sy a{color:black}
+.p_sy img { position:relative; top:3px}
+.p_ymsz{border:1px solid #dcdbdb; height:30px; line-height:30px; width:30px; text-align:center}
+.p_ymsz a{color:#686669; font-size:12pt}
+.p_tzym{height:30px; line-height:30px; width:159px; text-align:center;}
+.p_tzym span{margin-left:4px;margin-right:4px;}
+#tzym_t{height:25px;line-height:25px; width:30px; text-align:center}
+#ymtz_a{background:#d5d8e0;color:#333;float:right;cursor:pointer;height:30px; width:50px; line-height:30px;border:1px solid #919191}
+#ymtz_a:hover{background:#eee}
+/*#ymtz_a:hover{border:1px solid #50C6D8;box-shadow: 0 0 6px #858585;}*/
+/*知识点配置*/
+#choise_paner{width:390px}
+#choise_paner div{float:right;margin-left:6px;}
+#choise_paner div input{width:30px;border:0px;border-bottom:1px solid #919191;text-align:center}
+#kng_tip{margin-left:12px;width:340px;font-size:14px;height:38px;line-height:38px; margin-top:6px;color:#BF4E6A;}
