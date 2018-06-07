@@ -32,7 +32,7 @@
         <a href="knowledgepoint.aspx" ><li id="knowledgepoint" class="nav_href">知识点查询</li></a>
         <li class="nav_main">考试管理</li>
         <a href="outquestions.aspx" ><li id="outquestions" class="nav_href">智能出题</li></a>
-        <a href="Results.aspx" ><li class="nav_href">考试成绩查询</li></a>
+        <a href="Results.aspx" ><li id="Results" class="nav_href">考试成绩查询</li></a>
     </ul>
 </div>
 <div class="flt nav_right" style="height:100%;">
