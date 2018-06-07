@@ -1,0 +1,163 @@
+﻿<Application x:Class="ExamText.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:ExamTextServer"
+             xmlns:System="clr-namespace:System;assembly=mscorlib"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <FontFamily x:Key="DefaultFontFamily">Microsoft Yahei,Arial,SimSun,雅黑,微软微黑,宋体,微软微黑,雅黑,Yahei,Segoe UI,Segoe UI Light</FontFamily>
+        <FontFamily x:Key="HeaderFontFamily">微软微黑,雅黑,Microsoft Yahei,Yahei,Segoe UI,Segoe UI Light</FontFamily>
+        <FontFamily x:Key="TipFontFamily">微软微黑,雅黑,Microsoft Yahei,Yahei,宋体,Segoe UI,Segoe UI Light</FontFamily>
+
+
+
+        <System:Double x:Key="HeaderSamllFontSize">16</System:Double>
+        <System:Double x:Key="HeaderNormalFontSize">18</System:Double>
+        <System:Double x:Key="HeaderLargeFontSize">24</System:Double>
+
+
+        <System:Double x:Key="ContentSmallFontSize">12</System:Double>
+        <System:Double x:Key="ContentNormalFontSize">13</System:Double>
+        <System:Double x:Key="ContentLargeFontSize">14</System:Double>
+
+        <System:Double x:Key="TeachContentNormalFontSize">14</System:Double>
+        <System:Double x:Key="TeachContentLargeFontSize">18</System:Double>
+        <!--皮肤颜色-->
+        <SolidColorBrush x:Key="SkinBrush" Color="#D6DBE9" x:Uid="皮肤颜色" />
+
+        <!--主背景色-->
+        <SolidColorBrush x:Key="MainBlueBrush" Color="#eeeef2" x:Uid="主背景色" />
+
+        <!--副背景色-->
+        <SolidColorBrush x:Key="T_MainBlueBrush" Color="#4D6082" x:Uid="副背景色" />
+
+        <!--边框色-->
+        <SolidColorBrush x:Key="MainBlueOverBrush" Color="#cccccc" x:Uid="主边框色"  />
+
+        <!--黄色高亮-->
+        <SolidColorBrush x:Key="MainYellowBrush" Color="#ff8544" x:Uid="黄色高亮"  />
+
+        <!--黄色高亮,鼠标在上-->
+        <SolidColorBrush x:Key="MainYellowOverBrush" Color="#ff8522" x:Uid="黄色高亮,鼠标在上"  />
+
+        <!--橙色高亮,鼠标按下-->
+        <SolidColorBrush x:Key="MainOrangeBrush" Color="#FFFFA500" x:Uid="黄色高亮,鼠标在上"  />
+
+        <!--蓝色按钮边框-->
+        <SolidColorBrush x:Key="BlueButtonBorderBrush" Color="#9bb0cb" x:Uid="蓝色按钮边框"  />
+
+        <!--蓝色按钮边框-->
+        <SolidColorBrush x:Key="DarckGrayButtonBorderBrush" Color="#4F4F4F" x:Uid="深灰色按钮边框"  />
+
+        <!--授课主灰色-->
+        <SolidColorBrush x:Key="TeachMainGaryBrush" Color="#f8f8f8" x:Uid="授课主灰色"  />
+
+        <!--授课灰色-->
+        <SolidColorBrush x:Key="TeachTextGaryBrush" Color="#d7d7d7" x:Uid="授课灰色"  />
+        <!--弹窗背景色-->
+        <SolidColorBrush x:Key="WindowBackBrush" Color="#f2f2f2" x:Uid="弹窗背景色"  />
+        <!--授课间隔灰色-->
+        <SolidColorBrush x:Key="TeachSeparteGaryBrush" Color="#c9c9c9" x:Uid="授课间隔灰色"  />
+
+        <!--列表项正常时背景色-->
+        <SolidColorBrush x:Key="ListItemNormalBG" Color="#eeeef2" x:Uid="列表项正常时背景色"/>
+        <!--列表项正常时背景色-->
+        <SolidColorBrush x:Key="ListItemNormalBG01" Color="#eff2f7" x:Uid="列表项正常时背景色"/>
+        <!--列表项时鼠标悬浮背景色-->
+        <SolidColorBrush x:Key="ListItemOverBG" Color="#1c97ed" x:Uid="列表项时鼠标悬浮色"  />
+        <!--列表项禁用背景背景色-->
+        <SolidColorBrush x:Key="ListItemDisableBG" Color="#9bb0cb" x:Uid="列表项选中色"  />
+        <!--列表项选中色d4dcef-->
+        <SolidColorBrush x:Key="ListItemSelectedBG" Color="#007acc" x:Uid="列表项选中色"  />
+
+
+        <!--灰色按钮边框-->
+        <SolidColorBrush x:Key="GaryButtonBorderBrush" Color="#80C8FE" x:Uid="灰色按钮边框"  />
+
+        <!--透明01-->
+        <SolidColorBrush x:Key="Transparent01" Color="#01ffffff" x:Uid="透明01，不可穿透"  />
+
+        <!--透明-->
+        <SolidColorBrush x:Key="Transparent" Color="Transparent" x:Uid="透明，可穿透"  />
+
+        <!--白色-->
+        <SolidColorBrush x:Key="WhiteBrush" Color="#fff" x:Uid="白色"  />
+
+        <!--黑色-->
+        <SolidColorBrush x:Key="BlackTextBrush" Color="#666666" x:Uid="黑色文字专用"  />
+
+        <!--灰色文字-->
+        <SolidColorBrush x:Key="GaryTextBrush" Color="#666666" x:Uid="灰色文字"  />
+
+        <!--灰色背景-->
+        <SolidColorBrush x:Key="GaryBackground" Color="#eaeef6" x:Uid="灰色背景"  />
+
+        <!--灰色块背景-->
+        <SolidColorBrush x:Key="GaryBlockBackground" Color="#f6f8f8" x:Uid="灰色块背景"  />
+
+        <!--灰色禁用背景-->
+        <SolidColorBrush x:Key="GrayDisableBackgound" Color="#e4e4e4" x:Uid="灰色禁用背景"  />
+
+        <!--灰色边框-->
+        <SolidColorBrush x:Key="GaryBorderBrush" Color="#d3ddf0" x:Uid="灰色边框"  />
+
+        <!--分隔线灰色-->
+        <SolidColorBrush x:Key="GrayBorderSeparateBrush" Color="#d6d6d6" x:Uid="分隔线灰色"  />
+
+        <!--灰色边框禁用-->
+        <SolidColorBrush x:Key="GrayBorderDisableBrush" Color="#a8a8a8" x:Uid="灰色边框禁用"  />
+
+        <!--灰色禁用文字-->
+        <SolidColorBrush x:Key="GrayTextDisableBrush" Color="#a8a8a8" x:Uid="灰色禁用文字"  />
+
+
+        <!--授课ScrollBar背景-->
+        <SolidColorBrush x:Key="TeachScrollBarGrayBG" Color="#e5e5e5" x:Uid="灰色禁用文字"  />
+
+        <!--授课ScrollThumb背景-->
+        <SolidColorBrush x:Key="TeachScrollThumbGrayBG" Color="#a8a8a8" x:Uid="灰色禁用文字"  />
+
+        <!--加载遮罩色-->
+        <SolidColorBrush x:Key="LoadingMaskBrush" Color="#55000000" x:Uid="加载遮罩色"  />
+
+        <SolidColorBrush x:Key="DataGridHeadBackColorBrush" Color="White" x:Uid="表格头部背景色"></SolidColorBrush>
+        <SolidColorBrush x:Key="DataGridHeadFontColorBrush" Color="#666666" x:Uid="表格头部字体色"></SolidColorBrush>
+        <SolidColorBrush x:Key="MindElementColor" Color="#80C8FE" x:Uid="伸缩按钮色"/>
+        <SolidColorBrush x:Key="MindElementColorFocus" Color="#0092FF" x:Uid="伸缩按钮高亮色"/>
+        <SolidColorBrush x:Key="SearchMindElementColor" Color="#FFCCCED1" x:Uid="查询按钮色"/>
+
+        <!--网络试题编辑工具样式颜色-->
+        <SolidColorBrush x:Key="DockPanelTitleBgColor" Color="#007acc" x:Uid="按钮外框颜色"/>
+
+        <SolidColorBrush x:Key="NWQButtonBorderColor" Color="#FF3399FF" x:Uid="按钮外框颜色"/>
+        <SolidColorBrush x:Key="NWQButtonBorderColorUnEnable" Color="#999999" x:Uid="按钮外框颜色(禁用)"/>
+        <SolidColorBrush x:Key="NWQButtonFontColor" Color="#666666" x:Uid="按钮字体颜色"/>
+        <SolidColorBrush x:Key="NWQButtonFontColorFocus" Color="#FFFFFF" x:Uid="按钮字体颜色(获取光标)"/>
+        <SolidColorBrush x:Key="NWQButtonBgColor" Color="#FFFFFF" x:Uid="按钮背景色"/>
+        <SolidColorBrush x:Key="NWQButtonBgColorFocus" Color="#007acc" x:Uid="按钮背景色(获取光标)"/>
+        <SolidColorBrush x:Key="NWQButtonBgColorUnEnable" Color="#CCCCCC" x:Uid="按钮背景色(禁用)"/>
+
+        <SolidColorBrush x:Key="NWQCheckBoxColor" Color="#007acc" x:Uid="复选框选中色"/>
+        <SolidColorBrush x:Key="NWQCheckBoxFontColor" Color="#333333" x:Uid="复选框字体色"/>
+        <SolidColorBrush x:Key="NWQCheckBoxBgColor" Color="#FFFFFF" x:Uid="复选框背景色"/>
+
+        <SolidColorBrush x:Key="NWQRadioBtnColor" Color="#007acc" x:Uid="单选框选中色"/>
+        <SolidColorBrush x:Key="NWQRadioBtnFontColor" Color="#666666" x:Uid="单选框字体色"/>
+        <SolidColorBrush x:Key="NWQRadioBtnBgColor" Color="#FFFFFF" x:Uid="单选框背景色"/>
+
+        <SolidColorBrush x:Key="RoundRadioBtnColor" Color="#007acc" x:Uid="环节单选框选中色"/>
+        <SolidColorBrush x:Key="RoundRadioBtnFontColor" Color="#666666" x:Uid="环节单选框字体色"/>
+        <SolidColorBrush x:Key="RoundRadioBtnBgColor" Color="#FFFFFF" x:Uid="环节单选框背景色"/>
+        <SolidColorBrush x:Key="RoundRadioBtnBorderColor" Color="#D7D7D7" x:Uid="环节单选框边框背景色"/>
+
+        <SolidColorBrush x:Key="CommonRadioBtnBorderColor" Color="#3399FF" x:Uid="环节单选框边框背景色"/>
+
+        <SolidColorBrush x:Key="NWQComboxBorderColor" Color="#D7D7D7" x:Uid="下拉列表选中色"/>
+        <SolidColorBrush x:Key="NWQComboxFontColor" Color="#333333" x:Uid="下拉列表字体色"/>
+        <SolidColorBrush x:Key="NWTABbackColor" Color="#007acc" x:Uid="TAB背景色"/>
+
+        <SolidColorBrush x:Key="NWQSearchBoxBtnColor" Color="#007acc" x:Uid="搜索框查询按钮前景色"/>
+        <SolidColorBrush x:Key="NWQSearchBoxBtnBgColorFocus" Color="#007acc" x:Uid="搜索框查询按钮背景色(获取光标)"/>
+        <SolidColorBrush x:Key="NWQSearchBoxBtnColorFocus" Color="#FFFFFF" x:Uid="TAB搜索框查询按钮前景色(获取光标)"/>
+    </Application.Resources>
+</Application>

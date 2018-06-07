@@ -1,0 +1,181 @@
+﻿<Window x:Class="ExamTextServer.Login"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ExamTextServer"
+        mc:Ignorable="d"
+        Title="湘西州专业技术人员公需科目考试系统" Height="300" Width="392">
+    <Window.Resources>
+        <Style x:Key="BtnRegStyle" TargetType="Button">
+            <Setter Property="Width" Value="80"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Background" Value="#fff29d"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" x:Name="BtnBorder">
+                            <TextBlock x:Name="tbContent" Text="{TemplateBinding Content}" VerticalAlignment="Center"
+                                   HorizontalAlignment="Center"></TextBlock>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#c9def5"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#fff29d"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="{DynamicResource DisableBackgroundColor}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource DisableFontColor}" TargetName="tbContent"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="BtnLoginStyle" TargetType="Button">
+            <Setter Property="Width" Value="80"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Background" Value="#007acc"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" x:Name="BtnBorder">
+                            <TextBlock x:Name="tbContent" Text="{TemplateBinding Content}" VerticalAlignment="Center"
+                                           Foreground="White"
+                                   HorizontalAlignment="Center"></TextBlock>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#c9def5"/>
+                                <Setter Property="Foreground" Value="Black" TargetName="tbContent"></Setter>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#007acc"/>
+                                <Setter Property="Foreground" Value="White" TargetName="tbContent"></Setter>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="{DynamicResource DisableBackgroundColor}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource DisableFontColor}" TargetName="tbContent"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="TabLogin" TargetType="{x:Type TabItem}">
+            <Setter Property="Width" Value="60"></Setter>
+            <Setter Property="Height" Value="24"></Setter>
+            <Setter Property="Background" Value="#007acc"></Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate >
+                        <Border BorderThickness="0" x:Name="TaBorder" Background="Transparent">
+                            <TextBlock x:Name="tabtitle" Text="用户登录" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsMouseOver" Value="True"/>
+                                    <Condition Property="TabItem.IsSelected" Value="False"/>
+                                </MultiTrigger.Conditions>
+                                <Setter TargetName="TaBorder" Property="Background" Value="#1c97ed"></Setter>
+                                <Setter TargetName="tabtitle" Property="Foreground" Value="#ffffff"></Setter>
+                            </MultiTrigger>
+                            <Trigger Property="TabItem.IsSelected" Value="True">
+                                <Setter TargetName="TaBorder" Property="Background" Value="#007acc"></Setter>
+                                <Setter TargetName="tabtitle" Property="Foreground" Value="#ffffff"></Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="TabRegist" TargetType="{x:Type TabItem}">
+            <Setter Property="Width" Value="60"></Setter>
+            <Setter Property="Height" Value="24"></Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate >
+                        <Border BorderThickness="0" x:Name="TaBorder" Background="Transparent">
+                            <TextBlock x:Name="tabtitle" Text="用户注册" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsMouseOver" Value="True"/>
+                                    <Condition Property="TabItem.IsSelected" Value="False"/>
+                                </MultiTrigger.Conditions>
+                                <Setter TargetName="TaBorder" Property="Background" Value="#1c97ed"></Setter>
+                                <Setter TargetName="tabtitle" Property="Foreground" Value="#ffffff"></Setter>
+                            </MultiTrigger>
+                            <Trigger Property="TabItem.IsSelected" Value="True">
+                                <Setter TargetName="TaBorder" Property="Background" Value="#007acc"></Setter>
+                                <Setter TargetName="tabtitle" Property="Foreground" Value="#ffffff"></Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Grid Margin="1">
+        <Grid x:Name="LoginWindow">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="32"/>
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid Background="#ffffff" Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="湘西州专业技术人员公需科目考试系统" Foreground="#222222"
+                                   VerticalAlignment="Center" HorizontalAlignment="Center"
+                                   FontSize="18" FontWeight="Bold" Margin="0 0 0 10" 
+                                   FontFamily="{StaticResource DefaultFontFamily}" />
+                <Grid VerticalAlignment="Stretch" HorizontalAlignment="Center" Grid.Row="1">
+                    <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Width="300">
+                        <!--用户名-->
+                        <Border BorderBrush="{DynamicResource MainBlueOverBrush}" BorderThickness="1" Height="32" Margin="0,0,0,15">
+                            <Grid Background="{DynamicResource MainBlueBrush}">
+                                <TextBlock Text="手机/邮箱" IsEnabled="False" Name="txtTipsName" Foreground="#FF8D8D92" Margin="0,5,0,0"  Height="15" FontFamily="Microsoft YaHei" Panel.ZIndex="0"/>
+                                <TextBox Panel.ZIndex="1" 
+                                 BorderBrush="{DynamicResource DarckGrayButtonBorderBrush}"
+                                 Height="30" Name="txtUserName" TabIndex="2" VerticalAlignment="Center" BorderThickness="0" Background="Transparent" 
+                                 VerticalContentAlignment="Center" />
+                            </Grid>
+                        </Border>
+                        <!--<TextBox Margin="40,0,0,0" Background="Black"  Width="400" Height="35"></TextBox>-->
+                        <!--密码-->
+                        <Border BorderBrush="{DynamicResource MainBlueOverBrush}" BorderThickness="1" Height="32">
+                            <Grid Background="{DynamicResource MainBlueBrush}">
+                                <TextBlock Text="密   码" Name="txtTipsPassword" Grid.Column="1"  Foreground="#FF8D8D92"  
+                                           Margin="0,5,0,0"  Height="15" FontFamily="Microsoft YaHei" Panel.ZIndex="0"/>
+                                <PasswordBox Panel.ZIndex="1" 
+                                 BorderBrush="{DynamicResource DarckGrayButtonBorderBrush}"
+                                 Height="30" Name="PwdUser" TabIndex="2" VerticalAlignment="Center" BorderThickness="0" Background="Transparent" 
+                                 VerticalContentAlignment="Center" Grid.Column="1" />
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+                <StackPanel Orientation="Horizontal" Height="50" HorizontalAlignment="Right"  Width="270" VerticalAlignment="Stretch"  Grid.Row="2">
+                    <Button Name="BtnLogin"  Command="{Binding LoginCommand}" Width="120"
+                    CommandParameter="{Binding ElementName=txtUserName, Path=Text}" Style="{DynamicResource BtnLoginStyle}" 
+                            HorizontalAlignment="Left"
+                    Content="登录" FontSize="14" VerticalAlignment="Center" TabIndex="4" IsEnabled="{Binding bLoginBtnEnable}">
+                    </Button>
+
+                   
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>
