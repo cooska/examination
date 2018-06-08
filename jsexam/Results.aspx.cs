@@ -34,6 +34,8 @@ namespace jsexam
         void LoadData()
         {
             ModuleList = c_mian<c_knowledge>.Instans.GetModelList;
+            HaveTime = c_results.GetHaveDate;
+            Works = c_results.GetWorks;
             int pgidx = string.IsNullOrEmpty(Request.QueryString["page"]) == true ? 1 : int.Parse(Request.QueryString["page"]);
             int Rang = (pgidx - 1) * c_glob.EVERY_PAGE;
             string limit = string.Format("limit {0},{1}", Rang, c_glob.EVERY_PAGE);
@@ -47,5 +49,7 @@ namespace jsexam
             fy = c_glob.Instans.LoadSpliPage(c_glob.EVERY_PAGE, "id", "exam_layout", url, pgidx, condtion, ref SumCount);
         }
         public DataTable ModuleList { get; set; }
+        public List<int> HaveTime { get; set; }
+        public List<Key_Val> Works { get; set; }
     }
 }

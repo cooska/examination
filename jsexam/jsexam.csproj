@@ -93,6 +93,7 @@
     <Compile Include="control\c_mian.cs" />
     <Compile Include="control\c_module.cs" />
     <Compile Include="control\c_qusetoin.cs" />
+    <Compile Include="control\c_results.cs" />
     <Compile Include="index.aspx.cs">
       <DependentUpon>index.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

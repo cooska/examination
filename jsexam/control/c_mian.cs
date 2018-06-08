@@ -15,6 +15,10 @@ namespace jsexam.control
                 return _instans == null ? _instans = new T() : _instans;
             }
         }
-
+    }
+    public class Key_Val
+    {
+        public int key { get; set; }
+        public string val { get; set; }
     }
 }
