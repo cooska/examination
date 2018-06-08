@@ -40,13 +40,17 @@ namespace jsexam
             int Rang = (pgidx - 1) * c_glob.EVERY_PAGE;
             string limit = string.Format("limit {0},{1}", Rang, c_glob.EVERY_PAGE);
             string condtion = GetCondtion();
-            string sql = string.Format(@"SELECT * FROM (SELECT a.id,a.`exami_name`,a.`exami_time`,a.`exami_num`,a.`exami_place`,a.`exami_hold`,b.`module_name` FROM `exam_layout` a LEFT JOIN (SELECT id, module_name FROM `module_info` ) b ON a.`exami_module` = b.id) a
-            INNER JOIN (SELECT id FROM exam_layout {0} ORDER BY id DESC {1}) c
-            ON a.id = c.id", condtion, limit);
+            string sql = string.Format(@" select a.id,
+            (select module_name from module_info where id = (select exami_module from exam_layout where id = a.layout_id)) as module_name,
+            (select user_name from user_info where id =a.user_id ) as user_name,
+            (select user_sex from user_info where id = a.user_id) as user_sex,
+            (select work_name from work_info where id = a.work_id) as work_name,
+            (select exami_name from exam_layout where id = a.layout_id ) as exami_name,
+            a.score from exami_info a", condtion, limit);
             tb = c_mian<c_qusetoin>.Instans.GetAllQusetion(sql);
             string url = Request.Url.PathAndQuery;
             url = url.Substring(1);
-            fy = c_glob.Instans.LoadSpliPage(c_glob.EVERY_PAGE, "id", "exam_layout", url, pgidx, condtion, ref SumCount);
+            fy = c_glob.Instans.LoadSpliPage(c_glob.EVERY_PAGE, "id", "exami_info", url, pgidx, condtion, ref SumCount);
         }
         public DataTable ModuleList { get; set; }
         public List<int> HaveTime { get; set; }

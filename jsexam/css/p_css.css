@@ -35,7 +35,7 @@ body{background:#E8E9ED;overflow:hidden;}
 .nav_left ul{background: #E8E9ED}
 .nav_left ul li{list-style:none}
 .nav_left ul .nav_main{background: #d5d8e0; color: #333;font-size: 20px;letter-spacing: 4px;text-align: center;height: 36px;line-height: 36px;}
-.nav_left ul .nav_href{font-size: 16px;letter-spacing: 4px;text-align: center;height: 32px;line-height:32px;color: #333}
+.nav_left ul .nav_href{font-size: 16px;letter-spacing: 2px;text-align: center;height: 32px;line-height:32px;color: #333}
 .nav_left ul .nav_href:hover{background:#f5f5f5;color: #333}
 .liHover{background:#f5f5f5;color: #333}
 /*试题样式*/
