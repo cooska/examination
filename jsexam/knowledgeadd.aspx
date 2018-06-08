@@ -6,7 +6,7 @@
    <select id="quse_type" class="flt" style="font-size:14px;margin-top:2px;margin-left:4px;height:26px;line-height:26px; margin-right:4px;">
 	  <%for (int i = 0; i < ModuleList.Rows.Count; i++)
        {%>
-         <option value="<%=ModuleList.Rows[i]["id"].ToString() %>"><%=ModuleList.Rows[i]["module_name"].ToString()%> [共:<%=ModuleList.Rows[i]["count"].ToString() %>个知识点]</option>
+         <option value="<%=ModuleList.Rows[i]["id"].ToString() %>"><%=ModuleList.Rows[i]["module_name"].ToString()%></option>
      <%} %>
    </select>
 </div>

@@ -27,7 +27,7 @@
         <span class="Edit_Close">X</span>
     </div>
     <div class="cb"></div>
-    <div id="kng_paner" style="margin-left:12px; width:760px;font-size:14px;">
+    <div id="kng_paner" style="margin-left:12px; width:786px;height:430px;overflow-y:auto;font-size:14px;">
 
     </div>
     <div class="cb"></div>

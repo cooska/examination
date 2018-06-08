@@ -24,9 +24,9 @@ function SetView()
     Web_View_height = Web_View_height + (window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0);
     Web_View_height = Web_View_height-60;
     Web_View_width = document.documentElement.clientWidth;
-    nav_right_width = Web_View_width - 220;
+    nav_right_width = Web_View_width - 240;
     $('body').css("height",Web_View_height+"px");
-    //$(".nav_right").css("width", nav_right_width + "px");
+    $(".nav_right").css("width", nav_right_width + "px");
     $(".MaskPaner").css("height", (Web_View_height+60)+"px");
 }
 function InitFunction()
