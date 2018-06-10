@@ -755,8 +755,25 @@ function upModuleInfo()
         else {
             alert("保存知识点失败!");
         }
-    }
-   
+    } 
+}
+/*考试成绩查询*/
+function setResultSearch() {
+    var module_id = $("#quse_model").val();
+    module_id = (module_id == "-1" ? "" : "&exami_module=" + module_id + "");
+    var work_id = $("#quse_work").val();
+    work_id = (work_id == "-1" ? "" : "&work_id=" + work_id+ "");
+    var quse_year = $('#quse_year').val();
+    quse_year = (quse_year == "-1" ? "" : "&start_date=" + quse_year + "");
+    var user_card = $('#quse_sfz').val();
+    user_card = (user_card == "" ? "" : "&user_card=" + user_card + "");
+    var url = "Results.aspx?cx=yes" + module_id + work_id + quse_year + user_card;
+    window.location.href = url;
+}
+function ExportExamitoXls()
+{
+    var url = "Results.aspx?cx=yes&export=yes";
+    window.location.href = url;
 }
 /*帮助函数*/
 String.prototype.replaceAll = function (FindText, RepText) {
