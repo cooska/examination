@@ -59,7 +59,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataToExcel.cs" />
     <Compile Include="DEncrypt.cs" />
     <Compile Include="DESEncrypt.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

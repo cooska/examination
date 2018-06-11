@@ -16,7 +16,7 @@ namespace Common
         /// <summary>调用Excel打印数据
         /// strFile包含路径的模板文件名，strSheetName工作表名称，nQshh起始行号，nQslh起始列号，nZzlh终止列号，strBbmc报表名称，strDwmc单位名称，strZbr制表人
         /// </summary>
-        public static void ExportExcelTemplate(System.Data.DataTable dt, string strFileName, string strSheetName, int nQshh, int nQslh, int nZzlh, string strBbmc, string strDwmc, string strZbr)
+        public static void ExportExcelTemplate(string sql,string condtion,int DataCount,string strFileName, string strSheetName, int nQshh, int nQslh, int nZzlh, string strBbmc, string strDwmc, string strZbr)
         {
             // 导出
             string filename = HttpUtility.UrlEncode("考试成绩查询表.xls");// PinyinHelper.GetPinyin(Path.GetFileName(strFileName));
@@ -30,6 +30,8 @@ namespace Common
             //读取模板文件
             FileStream file = new FileStream(strFileName, FileMode.Open, FileAccess.Read);
             HSSFWorkbook hssfworkbook = new HSSFWorkbook(file);
+            //计算导出相关数据
+           
 
             GenerateData(hssfworkbook, dt, strSheetName, nQshh, nQslh, nZzlh, strBbmc, strDwmc, strZbr);
 
@@ -41,7 +43,7 @@ namespace Common
         /// <summary>填充Excel数据
         /// strSheetName工作表名称，nQshh起始行号，nQslh起始列号，nZzlh终止列号，strBbmc报表名称，strDwmc单位名称，strZbr制表人
         /// </summary>
-        private static void GenerateData(HSSFWorkbook hssfworkbook, System.Data.DataTable dt, string strSheetName, int nQshh, int nQslh, int nZzlh, string strBbmc, string strDwmc, string strZbr)
+        private static void GenerateData(string sql,string condtion,int DataCount, HSSFWorkbook hssfworkbook, System.Data.DataTable dt, string strSheetName, int nQshh, int nQslh, int nZzlh, string strBbmc, string strDwmc, string strZbr)
         {
             HSSFSheet sheet = hssfworkbook.GetSheet(strSheetName);
             //替换模板参数
