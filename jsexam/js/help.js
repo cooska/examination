@@ -772,7 +772,9 @@ function setResultSearch() {
 }
 function ExportExamitoXls()
 {
-    var url = "Results.aspx?cx=yes&export=yes";
+    var url = window.location.href;
+    url = url.split('?')[1];
+    url = "Results.aspx?" + url +"&export=yes";
     window.location.href = url;
 }
 function CallWriteExportStat(ct,sumct)

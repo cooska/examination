@@ -24,7 +24,7 @@ namespace Dataport
         /// <returns>1:成功,2:密码错误,0:没有该用户</returns>
         public sbyte UserLogin(string usname, string uspass)
         {
-            string sql = "select * from user_info where user_name='" + usname + "'";
+            string sql = "select * from user_info where user_phone='" + usname + "'";
             DataTable tb = DataCenter.Instans.SearchTb(sql);
             if (tb.Rows.Count > 0)
             {
