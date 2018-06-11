@@ -775,6 +775,16 @@ function ExportExamitoXls()
     var url = "Results.aspx?cx=yes&export=yes";
     window.location.href = url;
 }
+function CallWriteExportStat(ct,sumct)
+{
+    var str = ct + " / " + sumct;
+    if (ct == sumct) {
+        $("#CallState").html(str + " 导出完成!");
+    }
+    else {
+        $("#CallState").html(str);
+    }
+}
 /*帮助函数*/
 String.prototype.replaceAll = function (FindText, RepText) {
     let regExp = new RegExp(FindText, 'g');

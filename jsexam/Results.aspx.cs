@@ -1,5 +1,4 @@
-﻿using Common;
-using Dataport;
+﻿using Dataport;
 using jsexam.control;
 using System;
 using System.Collections.Generic;
@@ -18,6 +17,17 @@ namespace jsexam
         public int SumCount = 0;
         const sbyte EvPage = 10;
         public string ExcelPath = AppDomain.CurrentDomain.BaseDirectory + "template\\kscj.xls";
+
+        delegate void dlg_Export();
+        void Post_Export(dlg_Export hd)
+        {
+            hd.BeginInvoke(Post_ExportCallback,hd);
+        }
+        void Post_ExportCallback(IAsyncResult rst)
+        {
+            dlg_Export hd = (dlg_Export)rst.AsyncState;
+            hd.EndInvoke(rst);
+        }
         public string fy { get; set; }
         public DataTable tb { get; set; }
         #endregion
@@ -29,7 +39,7 @@ namespace jsexam
             }
             else {
                 LoadData();
-            } 
+            }
         }
         string GetCondtion()
         {
@@ -66,25 +76,37 @@ namespace jsexam
             string url = Request.Url.PathAndQuery;
             url = url.Substring(1);
             fy = c_glob.Instans.LoadSpliPage(EvPage, "id", "exami_info", url, pgidx, condtion, ref SumCount);
-        }
+         }
         void ExpoertExcel()
         {
-            int pgidx = string.IsNullOrEmpty(Request.QueryString["page"]) == true ? 1 : int.Parse(Request.QueryString["page"]);
-            int Rang = (pgidx - 1) * EvPage;
-            string limit = string.Format("limit {0},{1}", Rang, EvPage);
+            //Response.Write("<script>CallWriteExportStat('12');</script>");
+            //Response.Write("<script>CallWriteExportStat(12,35)</script>");
+            //Page.ClientScript.RegisterClientScriptBlock(this.GetType(),"xx","alert('12');");
+           // return;
             string condtion = GetCondtion();
-            string sql = string.Format(@"select
+            string sql = @"select
             (select module_name from module_info where id = (select exami_module from exam_layout where id = a.layout_id)) as module_name,
             (select user_name from user_info where id =a.user_id ) as user_name,
             (select user_sex from user_info where id = a.user_id) as user_sex,
             a.user_card,
             (select work_name from work_info where id = a.work_id) as work_name,
             (select exami_name from exam_layout where id = a.layout_id ) as exami_name,
-            a.score from exami_info a {0} {1}", condtion, limit);
-            tb = c_mian<c_qusetoin>.Instans.GetAllQusetion(sql);
-            DataToExcel.ExportExcelTemplate(tb, ExcelPath,"公考成绩查询统计表", 3,1,tb.Columns.Count,"","","");
-
+            a.score from exami_info a";
+            //计算统计总数，总分页数
+            DataTable Art_Table = DataCenter.Instans.SearchTb(string.Format("select count(id) as ct from exami_info {0}",condtion));
+            int Datacount = int.Parse(Art_Table.Rows[0]["ct"].ToString());
+            double dx = ((double)Datacount / EvPage);
+            int SumPage = (int)Math.Ceiling(dx);//总页数
+            //组合导出条件
+            var item = new ExportContion() { sql= sql, condtion = condtion, DataCount = Datacount, SumPage = SumPage,EvePage = EvPage };
+            DataToExcel.ExportExcelTemplate(item,ExcelPath,"公考成绩查询统计表", 3,1,"","","");
         }
+
+        private void Export_Evnet_ShowExportPercent(int ct, int SumCt)
+        {
+            //Response.Write("<script>parent.CallWriteExportStat("+ct+","+SumCt+")</script>");
+        }
+
         public DataTable ModuleList { get; set; }
         public List<int> HaveTime { get; set; }
         public List<Key_Val> Works { get; set; }

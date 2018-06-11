@@ -1,6 +1,8 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/mast.Master" AutoEventWireup="true" CodeBehind="Results.aspx.cs" Inherits="jsexam.Results" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    <%if (ModuleList != null && ModuleList.Rows.Count > 0)
+        { %>
     <div class="condtionpaner" style="margin-left: 12px">
         <div class="flt QuseTitle" style="font-size: 16px;">模块类型:</div>
         <select id="quse_model" class="flt" style="font-size: 14px; margin-top: 2px; margin-left: 4px; height: 26px; line-height: 26px; margin-right: 4px;" onchange="setResultSearch();">
@@ -10,7 +12,7 @@
             <option value="<%=ModuleList.Rows[i]["id"].ToString() %>"><%=ModuleList.Rows[i]["module_name"].ToString()%> [共:<%=ModuleList.Rows[i]["count"].ToString() %>个知识点]</option>
             <%} %>
         </select>
-         <div class="flt QuseTitle" style="font-size: 16px;">所属单位:</div>
+        <div class="flt QuseTitle" style="font-size: 16px;">所属单位:</div>
         <select id="quse_work" class="flt" style="font-size: 14px; margin-top: 2px; margin-left: 4px; height: 26px; line-height: 26px; margin-right: 4px;" onchange="setResultSearch();">
             <option value="-1">- 未设置 -</option>
             <%for (int i = 0; i < Works.Count; i++)
@@ -25,9 +27,9 @@
                 {%>
             <option value="<%=HaveTime[i] %>"><%=HaveTime[i]%> 年</option>
             <%} %>
-        </select>       
+        </select>
         <div class="cb"></div>
-        <div class="flt QuseTitle" style="font-size: 16px;margin-top:6px;">身份证号:</div>
+        <div class="flt QuseTitle" style="font-size: 16px; margin-top: 6px;">身份证号:</div>
         <input class="flt" id="quse_sfz" value="" placeholder="请输入身份证号码" style="width: 400px; margin-top: 6px" onchange="setResultSearch();" />
         <a class="flt" style="margin-left: 10px; margin-top: 6px" href="Results.aspx">清除查询</a>
     </div>
@@ -67,7 +69,8 @@
         <tr class="quse_bottom">
             <td colspan="7">
                 <div class="flt">当前查询共 [<%=SumCount%>] 人次</div>
-                <div class="flr" style="margin-right:10px;"><a href="javascript:;" style="color:#007aff" onclick="ExportExamitoXls();">导出表格</a></div>
+                <div class="flr" style="margin-right: 10px;"><a href="javascript:;" style="color: #007aff" onclick="ExportExamitoXls();">导出表格</a></div>
+
             </td>
         </tr>
     </table>
@@ -82,7 +85,7 @@
         if (module_id != null && module_id != "" && module_id != "-1") {
             $("#quse_model").val(module_id);
         }
-        if (work_id != null && work_id != "" && work_id!="-1") {
+        if (work_id != null && work_id != "" && work_id != "-1") {
             $("#quse_work").val(work_id);
         }
         if (year != null && year != "" && year != "-1") {
@@ -92,4 +95,7 @@
             $("#quse_sfz").val(user_card);
         }
     </script>
+    <%} %>
+
+    <div class="flr" id="CallState"></div>
 </asp:Content>
