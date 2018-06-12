@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ExamTextServer"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        
+        Title="考试作答客户端" Height="620" Width="800" WindowStartupLocation="CenterScreen">
+    <Grid Background="#fff">
+         
     </Grid>
 </Window>

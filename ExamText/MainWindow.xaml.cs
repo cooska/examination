@@ -22,6 +22,12 @@ namespace ExamTextServer
         public MainWindow()
         {
             InitializeComponent();
+            this.Loaded += MainWindow_Loaded;
+        }
+
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            new examTCP("192.168.131.22",11118).Connect();
         }
     }
 }
