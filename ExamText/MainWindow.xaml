@@ -5,15 +5,53 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ExamTextServer"
         mc:Ignorable="d"
-        Title="考试作答客户端" Height="620" Width="1000" WindowStartupLocation="CenterScreen">
+        Title="考试作答客户端" Height="720" Width="1000"  WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <Style TargetType="Button" x:Key="BtnIcon">
+            <Setter Property="FontWeight" Value="Normal" />
+            <Setter Property="FontSize" Value="{DynamicResource ButtonFontSize}" />
+            <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
+            <Setter Property="Background" Value="{DynamicResource MainBlueBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource WhiteBrush}" />
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Cursor"  Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Ellipse x:Name="bak" Fill="{TemplateBinding Background}" Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" Stretch="Fill"></Ellipse>
+                            <TextBlock Foreground="{TemplateBinding Foreground}" HorizontalAlignment="Center" Margin="0 4 0 0" TextWrapping="WrapWithOverflow" FontSize="{TemplateBinding FontSize}"
+                                               Text="{TemplateBinding Content}"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Fill" TargetName="bak" Value="#113c93"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                             <Setter Property="Fill" TargetName="bak" Value="#234587"/>
+                        </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Fill" TargetName="bak" Value="#e0e0e0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
     <Grid Background="#fff">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="220"></ColumnDefinition>
             <ColumnDefinition Width="*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Border Grid.Column="0" BorderThickness="0 0 1 0" BorderBrush="#919191">
-            <StackPanel Orientation="Vertical"  HorizontalAlignment="Stretch" VerticalAlignment="Top">
-                <Image x:Name="ks_img" Source="" Stretch="Uniform"  Height="220" Width="200" Margin="0 10 0 0"></Image>
+            <StackPanel x:Name="left_paner" Orientation="Vertical"  HorizontalAlignment="Stretch" VerticalAlignment="Top">
+                <Image x:Name="ks_img"  Stretch="Uniform"  Height="220" Width="200" Margin="0 10 0 0"></Image>
                 <StackPanel Orientation="Horizontal" Margin="14 30 0 0">
                     <TextBlock Text="考生姓名:"></TextBlock>
                     <TextBlock x:Name="ks_name" Text="张三" Margin="5 0 0 0"></TextBlock>
@@ -38,11 +76,25 @@
                     <TextBlock Text="手机号码:"></TextBlock>
                     <TextBlock x:Name="ks_phone" Text="18974326247" Margin="5 0 0 0"></TextBlock>
                 </StackPanel>
-                <TextBlock Text="考试剩余时间" FontSize="24" HorizontalAlignment="Center" Margin="0 20 0 0">
+                <TextBlock Text="考试剩余时间" FontSize="24" HorizontalAlignment="Center" Margin="0 140 0 0">
                     </TextBlock>
                 <TextBlock x:Name="ks_time" FontSize="22" HorizontalAlignment="Center" Foreground="Red" Text="59分24秒" Margin="0 10 0 0"></TextBlock>
             </StackPanel>
         </Border>
+        <Grid Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="200"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0"></Border>
+            <Border Grid.Row="1" BorderBrush="#919191" BorderThickness="0 1 0 0">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <WrapPanel x:Name="btn_idx" ButtonBase.Click="btn_idx_Click">
+                        <!--动态加载控件-->
+                    </WrapPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
         
     </Grid>
 </Window>

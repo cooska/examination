@@ -70,7 +70,9 @@ namespace ExamTextServer
             }
             catch (Exception ex)
             {
-                WriteErr("连接服务器出错：" + Environment.NewLine + "Connect" + ex.ToString());
+                // WriteErr("连接服务器出错：" + Environment.NewLine + "Connect" + ex.ToString());
+                Thread.Sleep(1000);
+               //Connect();
             }
             //与后台保持连接
             Thread threadHeart = new Thread(new ThreadStart(SendHeart));
@@ -80,20 +82,18 @@ namespace ExamTextServer
         void GetServerMsg()
         {
            
-            while (true)
+            while (tcpClient.Connected)
             {
                 try
                 {
+                    Byte[] buffer = new Byte[256];
                     NetworkStream networkStream = tcpClient.GetStream();
-                    //将网络流作为二进制读写对象
-                    br = new BinaryReader(networkStream);
                     bw = new BinaryWriter(networkStream);
-                    string sReader = br.ReadString(); //接收消息  
-                    string xxx = sReader;
-                    string sWriter = "接收到消息";
-                    bw.Write(sWriter);   //向对方发送消息  
+                    //将网络流作为二进制读写对象
+                    var bytesRead = networkStream.Read(buffer, 0, buffer.Length);
+                    string xx = System.Text.Encoding.ASCII.GetString(buffer, 0, bytesRead);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     break;
                 }
@@ -137,13 +137,13 @@ namespace ExamTextServer
         }
 
         /// <summary>
-        /// 给服务器心跳，10秒一次
+        /// 给服务器心跳，1秒一次
         /// </summary>
         private void SendHeart()
         {
             while (true)
             {
-                Thread.Sleep(10000);
+                Thread.Sleep(1000);
                 SendMsg("0000");
             }
         }
@@ -161,6 +161,7 @@ namespace ExamTextServer
                 short lengthall = (short)(length + 2);
                 byte[] lengthByte = System.BitConverter.GetBytes(lengthall);
                 byte[] all = lengthByte.Concat(msg).ToArray();
+              
                 //然后将字节数组写入网络流
                 if (bw != null && tcpClient.Connected == true)
                 {

@@ -23,17 +23,34 @@ namespace ExamTextServer
         /// <summary>
         /// 考试总时间(分钟)
         /// </summary>
-        public sbyte SumTime =60;
+        public sbyte SumTime = 60;
+        /// <summary>
+        /// 按钮背景颜色
+        /// </summary>
+        Color color = (Color)ColorConverter.ConvertFromString("#1f4ba4");
+        /// <summary>
+        /// 按钮样式
+        /// </summary>
+        Style btn_style = null;
         delegate void dlg_ActionTime();
         void Post_ActionTime(dlg_ActionTime hd)
         {
-            hd.BeginInvoke(ActoinTimeCallBack,hd);
+            hd.BeginInvoke(ActoinTimeCallBack, hd);
         }
         void ActoinTimeCallBack(IAsyncResult ars)
         {
             dlg_ActionTime hd = (dlg_ActionTime)ars.AsyncState;
             hd.EndInvoke(ars);
             MessageBox.Show("考试结束");
+        }
+        void Post_IintData(dlg_ActionTime hd)
+        {
+            hd.BeginInvoke(ActionIintDataCallBack, hd);
+        }
+        void ActionIintDataCallBack(IAsyncResult ars)
+        {
+            dlg_ActionTime hd = (dlg_ActionTime)ars.AsyncState;
+            hd.EndInvoke(ars);
         }
         public MainWindow()
         {
@@ -43,24 +60,39 @@ namespace ExamTextServer
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            //new examTCP("192.168.131.22",11118).Connect();
+            Post_IintData(ConServer);
+            btn_style = (Style)this.FindResource("BtnIcon");
+            Post_IintData(InitFormData);
+            Post_IintData(AddQuesBtn);
+        }
+        void ConServer()
+        {
+            new examTCP("192.168.131.22", 11118).Connect();
+        }
+        void InitFormData()
+        {
             LoadStudentInfo();
         }
         void LoadStudentInfo()
         {
-            ks_img.Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory+"timg.jpg",UriKind.Absolute));//strImagePath 就绝对路径
-            Post_ActionTime(ActionTime);
+            left_paner.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                ks_img.Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "timg.jpg", UriKind.Absolute));//strImagePath 就绝对路径
+                Post_ActionTime(ActionTime);
+            }));
+
         }
         void ActionTime()
         {
-            DateTime fiveM = DateTime.Parse(string.Format("00:{0}:59", (SumTime-1)));
+            DateTime fiveM = DateTime.Parse(string.Format("00:{0}:59", (SumTime - 1)));
             bool IsBreak = false;
             while (true)
             {
-                this.Dispatcher.BeginInvoke(new Action(()=> {
+                ks_time.Dispatcher.BeginInvoke(new Action(() =>
+                {
                     fiveM = fiveM.AddSeconds(-1);
                     ks_time.Text = string.Format("{0}分{1}秒", fiveM.Minute.ToString("00"), fiveM.Second.ToString("00"));
-                    if (ks_time.Text=="00分00秒")
+                    if (ks_time.Text == "00分00秒")
                     {
                         IsBreak = true;
                     }
@@ -71,6 +103,23 @@ namespace ExamTextServer
                 }
                 Thread.Sleep(1000);
             }
+        }
+        void AddQuesBtn()
+        {
+           
+            btn_idx.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                for (int i = 0; i < 100; i++)
+                {
+                    Button xx = new Button() { Width = 26, Height = 26, Content = (i + 1).ToString(), Background = new SolidColorBrush(color), Margin = new Thickness(6, 6, 10, 0), Style = btn_style };
+                    btn_idx.Children.Add(xx);
+                }
+            }));
+
+        }
+        private void btn_idx_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
