@@ -71,7 +71,7 @@ namespace ExamTextServer
             catch (Exception ex)
             {
                 // WriteErr("连接服务器出错：" + Environment.NewLine + "Connect" + ex.ToString());
-                Thread.Sleep(1000);
+               // Thread.Sleep(1000);
                //Connect();
             }
             //与后台保持连接
@@ -86,12 +86,19 @@ namespace ExamTextServer
             {
                 try
                 {
-                    Byte[] buffer = new Byte[256];
+                    Byte[] buffer = new Byte[1024];
                     NetworkStream networkStream = tcpClient.GetStream();
                     bw = new BinaryWriter(networkStream);
                     //将网络流作为二进制读写对象
-                    var bytesRead = networkStream.Read(buffer, 0, buffer.Length);
-                    string xx = System.Text.Encoding.ASCII.GetString(buffer, 0, bytesRead);
+                    StringBuilder sb = new StringBuilder();
+                    int bytesRead = 0;
+                    do
+                    {
+                        bytesRead = networkStream.Read(buffer, 0, buffer.Length);
+                        sb.Append(System.Text.Encoding.Default.GetString(buffer, 0, bytesRead));
+                    } while (bytesRead == 1024);
+                    string xx = sb.ToString();
+
                 }
                 catch (Exception ex)
                 {
@@ -117,23 +124,7 @@ namespace ExamTextServer
         /// </summary>
         public void Reconnect()
         {
-            try
-            {
-                if (tcpClient != null)
-                {
-                    tcpClient.Close();
-                }
-                tcpClient = new TcpClient(IP, port);
-                //获取网络流
-                NetworkStream networkStream = tcpClient.GetStream();
-                //将网络流作为二进制读写对象
-                br = new BinaryReader(networkStream);
-                bw = new BinaryWriter(networkStream);
-            }
-            catch (Exception ex)
-            {
-                WriteErr("重连服务器出错：" + Environment.NewLine + "Reconnect" + ex.ToString());
-            }
+            Connect();
         }
 
         /// <summary>
@@ -156,7 +147,7 @@ namespace ExamTextServer
         {
             try
             {
-                byte[] msg = Encoding.UTF8.GetBytes(msgs);
+                byte[] msg = Encoding.Default.GetBytes(msgs);
                 int length = msg.Length;
                 short lengthall = (short)(length + 2);
                 byte[] lengthByte = System.BitConverter.GetBytes(lengthall);

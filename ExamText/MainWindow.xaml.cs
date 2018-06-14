@@ -67,7 +67,7 @@ namespace ExamTextServer
         }
         void ConServer()
         {
-            //new examTCP("192.168.131.22", 11118).Connect();
+            new examTCP("192.168.131.22", 11118).Connect();
             this.Dispatcher.BeginInvoke(new Action(()=> {
                 this.Title = "考试作答系统V1.0 [已成功连接考试服务器]";
             }));
