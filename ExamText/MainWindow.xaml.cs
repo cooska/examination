@@ -63,11 +63,14 @@ namespace ExamTextServer
             Post_IintData(ConServer);
             btn_style = (Style)this.FindResource("BtnIcon");
             Post_IintData(InitFormData);
-            Post_IintData(AddQuesBtn);
+           
         }
         void ConServer()
         {
-            new examTCP("192.168.131.22", 11118).Connect();
+            //new examTCP("192.168.131.22", 11118).Connect();
+            this.Dispatcher.BeginInvoke(new Action(()=> {
+                this.Title = "考试作答系统V1.0 [已成功连接考试服务器]";
+            }));
         }
         void InitFormData()
         {
@@ -78,7 +81,7 @@ namespace ExamTextServer
             left_paner.Dispatcher.BeginInvoke(new Action(() =>
             {
                 ks_img.Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "timg.jpg", UriKind.Absolute));//strImagePath 就绝对路径
-                Post_ActionTime(ActionTime);
+                
             }));
 
         }
@@ -120,6 +123,19 @@ namespace ExamTextServer
         private void btn_idx_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+        /// <summary>
+        /// 开始考试
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            btn_start.Visibility = Visibility.Collapsed;
+            time_paner.Visibility = Visibility.Visible;
+            //先获取数据
+            Post_ActionTime(ActionTime);//启动结束时间
+            Post_IintData(AddQuesBtn);//启动题号
         }
     }
 }

@@ -1,0 +1,16 @@
+﻿<UserControl x:Class="ExamTextServer.QuestionItem"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ExamTextServer"
+             mc:Ignorable="d" 
+             d:DesignHeight="50" d:DesignWidth="300">
+    <Grid>
+        <StackPanel Orientation="Horizontal" TextBlock.FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Left" >
+            <TextBlock Text="A"></TextBlock>
+            <TextBlock Margin="4 0 0 0" Text="在我国的男打死了房间的上来开发打扫房间的上来开发大神阿里客服大神吉拉上来看风景的酸辣粉" TextWrapping="Wrap"></TextBlock>
+            <CheckBox></CheckBox>
+        </StackPanel>
+    </Grid>
+</UserControl>
