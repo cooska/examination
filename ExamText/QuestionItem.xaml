@@ -5,12 +5,70 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ExamTextServer"
              mc:Ignorable="d" 
-             d:DesignHeight="50" d:DesignWidth="300">
+             d:DesignHeight="50" d:DesignWidth="1000">
+    <UserControl.Resources>
+        <Style x:Key="P_CheckChoesItem" TargetType="CheckBox">
+            <Setter Property="FontSize" Value="{DynamicResource ContentNormalFontSize}" />
+            <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
+            <Setter Property="Background" Value="{DynamicResource Transparent}" />
+            <Setter Property="Foreground" Value="{DynamicResource BlackTextBrush}" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Padding" Value="6,0,0,0" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <Grid VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="16" x:Name="LeftCol" />
+                                <ColumnDefinition Width="*" x:Name="RightCol" />
+                            </Grid.ColumnDefinitions>
+                            <Grid x:Name="PART_CHECKBOX" Background="#fff" VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+                                <Border x:Name="border"  Opacity="1" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}" Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" Background="White" 
+                                    SnapsToDevicePixels="True"/>
+
+                                <Path x:Name="checkBox" Height="12" Width="12" Stretch="Fill" Opacity="0" Fill="{TemplateBinding BorderBrush}"
+                                  Data="F1 M 23.7501,33.25L 34.8334,44.3333L 52.2499,22.1668L 56.9999,26.9168L 34.8334,53.8333L 19.0001,38L 23.7501,33.25 Z"  />
+                                <Rectangle x:Name="IndeterminateCheck" Height="10" Width="10" Stretch="Fill" Opacity="0" Fill="{DynamicResource DarckGrayButtonBorderBrush}"/>
+                            </Grid>
+                            <ContentPresenter x:Name="contentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          Content="{TemplateBinding Content}" Grid.Column="1"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          Margin="{TemplateBinding Padding}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter Property="Opacity" Value="1" TargetName="checkBox"/>
+                                <Setter Property="Fill" Value="#fff" TargetName="checkBox"/>
+                                <Setter Property="BorderBrush" Value="#1f4ba4" TargetName="border"></Setter>
+                                <Setter Property="Background" Value="#1f4ba4" TargetName="border"></Setter>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="{x:Null}">
+                                <Setter Property="Opacity" Value="1" TargetName="IndeterminateCheck"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="{DynamicResource GrayTextDisableBrush}"/>
+                                <Setter Property="BorderBrush" Value="{DynamicResource GrayBorderDisableBrush}" TargetName="border"/>
+                                <Setter Property="Fill" Value="{DynamicResource GrayBorderDisableBrush}" TargetName="checkBox"/>
+                                <Setter Property="Fill" Value="{DynamicResource GrayBorderDisableBrush}" TargetName="IndeterminateCheck"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
     <Grid>
         <StackPanel Orientation="Horizontal" TextBlock.FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Left" >
             <TextBlock Text="A"></TextBlock>
-            <TextBlock Margin="4 0 0 0" Text="在我国的男打死了房间的上来开发打扫房间的上来开发大神阿里客服大神吉拉上来看风景的酸辣粉" TextWrapping="Wrap"></TextBlock>
-            <CheckBox></CheckBox>
+            <TextBlock Margin="6 0 0 0" Text="在我国的男打死了房间的上来开发打扫房间的上来开发大神阿里客服大神吉拉上来看风景的酸辣粉" TextWrapping="Wrap"></TextBlock>
+            <CheckBox Style="{StaticResource P_CheckChoesItem}" Margin="10 0 0 0" Height="16" IsChecked="False" Width="16" BorderThickness="2" BorderBrush="#333"></CheckBox>
         </StackPanel>
     </Grid>
 </UserControl>
