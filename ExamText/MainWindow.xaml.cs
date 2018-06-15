@@ -60,7 +60,7 @@ namespace ExamTextServer
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            Post_IintData(ConServer);
+           // Post_IintData(ConServer);
             btn_style = (Style)this.FindResource("BtnIcon");
             Post_IintData(InitFormData);
            

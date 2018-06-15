@@ -599,9 +599,9 @@ function setmodulekng(mid)
            new_kng_str = new_kng_str.replaceAll("{th_ddxsum}", rst[i]["ddx"]);
            new_kng_str = new_kng_str.replaceAll("{th_pdsum}", rst[i]["pd"]);
             //设置数据值
-           var dx_val = jsonData != "" ? kng_list[i]["choices"][0]["dx"]:"0";
-           var ddx_val = jsonData != "" ? kng_list[i]["choices"][1]["ddx"]:"0";
-           var pd_val = jsonData != "" ? kng_list[i]["choices"][2]["pd"]:"0";
+           var dx_val = jsonData != "" ? kng_list[i]["dx"]:"0";
+           var ddx_val = jsonData != "" ? kng_list[i]["ddx"]:"0";
+           var pd_val = jsonData != "" ? kng_list[i]["pd"]:"0";
 
            new_kng_str = new_kng_str.replaceAll("{th_dxval}", dx_val);
            new_kng_str = new_kng_str.replaceAll("{th_ddxval}", ddx_val);
@@ -668,7 +668,7 @@ function setmodulekng(mid)
     //这里必须加
     SetView();
 }
-var md_info_str = "{\"kng_id\":\"{th_id}\",\"choices\":[{\"dx\":\"{th_dx}\"},{\"ddx\":\"{th_ddx}\"},{\"pd\":\"{th_pd}\"}]}";
+var md_info_str = "{\"kng_id\":\"{th_id}\",\"dx\":\"{th_dx}\",\"ddx\":\"{th_ddx}\",\"pd\":\"{th_pd}\"}";
 function upModuleInfo()
 {
     var dx_num = 0;

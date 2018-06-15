@@ -114,6 +114,7 @@ namespace ExamTextServer
             {
                 File.Create(Path);
             }
+
             StreamWriter sw = new StreamWriter(Path, true, Encoding.UTF8);
             sw.WriteLine(msg);
             sw.Close();

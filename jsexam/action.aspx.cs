@@ -90,7 +90,7 @@ namespace jsexam
                     p2 = Request.QueryString["nkg_list"];
                     p2 = HttpUtility.UrlDecode(p2);
                     p2 = p2.Replace("'", "\\'");
-                    p2 = p2.Replace("\"","\"\"");
+                   // p2 = p2.Replace("\"","\"\"");
                     rst = c_mian<c_module>.Instans.UpKng_list(int.Parse(p1),p2).ToString();
                     break;
             }
