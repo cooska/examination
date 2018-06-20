@@ -20,7 +20,7 @@ body{background:#E8E9ED;overflow:hidden;}
 .login_input{margin-left: 60px;height: 40px;width: 500px;line-height: 40px;border: 0px;background: white}
 .login_input img{margin-left: 10px;margin-top: 4px;}
 .login_input input{margin-left: 4px; width: 452px;height: 40px;line-height: 40px;border:0px;background: white;font-size: 16px;}
-.nav_r_top_title{line-height: 60px; margin-left: 20px;font-size: 32px;letter-spacing: 4px}
+.nav_r_top_title{line-height: 60px; margin-left: 10px;font-size: 25px;letter-spacing: 1px}
 /*mast*/
 .nav_left{width: 220px;height: 100%;}
 .nav_right{background: white}

@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="language" content="zh-CN">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1"> 
-<title>这就是街舞xx</title>
+<title>湘西州专业技术人员公需科目考试系统 V1.0 PowerBy Bingo</title>
     <meta name="Keywords" content="湘西州专业技术人员公需科目考试系统"/>
     <meta name="Description" content="湘西州专业技术人员公需科目考试系统"/>
 	<link rel="stylesheet" type="text/css" href="css/p_css.css">
@@ -15,7 +15,7 @@
 <body style="background:#fff">
  <div class="MaskPaner"></div>
  <div class="nav_right_top">
-   <div class="flt nav_r_top_title">这就是街舞xx</div>
+   <div class="flt nav_r_top_title">湘西州专业技术人员公需科目考试系统 V1.0</div>
       <div  class="flr nrtl_msg">
         <div class="flt"><%=UsName%></div>
         <img class="flr" src="img/usimg2.png" height="50"/>

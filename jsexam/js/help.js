@@ -708,6 +708,11 @@ function upModuleInfo()
                 break;
         }
     });
+    if ((dx_num + ddx_num + pd_num)==0)
+    {
+        alert("请配置试题!");
+        return;
+    }
     if ((dx_num + ddx_num + pd_num)>100)
     {
         alert("配置试题数量不能超过100道");

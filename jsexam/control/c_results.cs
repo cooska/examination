@@ -19,6 +19,10 @@ namespace jsexam.control
                 List<int> arr = new List<int>();
                 string sql = "select start_date  from exami_info order by start_date ASC limit 1 ";
                 DataTable tb = DataCenter.Instans.SearchTb(sql);
+                if (tb.Rows.Count==0)
+                {
+                    return new List<int>() { DateTime.Now.Year};
+                }
                 DateTime MinTime =DateTime.Parse(tb.Rows[0][0].ToString());
                 DateTime NowTime = DateTime.Now;
                 int rst = NowTime.Year - MinTime.Year;
