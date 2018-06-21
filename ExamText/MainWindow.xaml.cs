@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -33,6 +34,7 @@ namespace ExamTextServer
         /// </summary>
         Style btn_style = null;
         delegate void dlg_ActionTime();
+        examTCP ExTCP = null;
         void Post_ActionTime(dlg_ActionTime hd)
         {
             hd.BeginInvoke(ActoinTimeCallBack, hd);
@@ -67,11 +69,59 @@ namespace ExamTextServer
         }
         void ConServer()
         {
-            new examTCP("192.168.131.22", 11118).Connect();
+            ExTCP = new examTCP("192.168.131.22", 11118);
+            ExTCP.On_isConToServer += ExTCP_On_isConToServer;
+            ExTCP.On_isGetUserInfo += ExTCP_On_isGetUserInfo;
+            ExTCP.Connect();
+        }
+
+        private void ExTCP_On_isGetUserInfo(root userinfo)
+        {
             this.Dispatcher.BeginInvoke(new Action(()=> {
-                this.Title = "考试作答系统V1.0 [已成功连接考试服务器]";
+                byte[] arr = Convert.FromBase64String(userinfo.user_info.user_head_img);
+                ks_img.Source = LoadImage(arr);
+                ks_name.Text = userinfo.user_info.user_name;
+                ks_xb.Text = userinfo.user_info.user_sex;
+                ks_sfz.Text = userinfo.user_info.user_card;
+                ks_dw.Text = userinfo.user_info.user_work_str;
+                ks_sd.Text = userinfo.user_info.user_place_str;
             }));
         }
+        public BitmapImage LoadImage(byte[] imageData)
+        {
+            if (imageData == null || imageData.Length == 0) return null;
+            var image = new BitmapImage();
+            using (var mem = new MemoryStream(imageData))
+            {
+                mem.Position = 0;
+                image.BeginInit();
+                image.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
+                image.CacheOption = BitmapCacheOption.OnLoad;
+                image.UriSource = null;
+                image.StreamSource = mem;
+                image.EndInit();
+            }
+            image.Freeze();
+            return image;
+        }
+
+        private void ExTCP_On_isConToServer(bool YesOrNo)
+        {
+            if (YesOrNo)
+            {
+                this.Dispatcher.BeginInvoke(new Action(() => {
+                    this.Title = "湘西州专业技术人员公需科目考试作答系统V1.0 [已成功连接考试服务器]";
+                    ExTCP.SendMsg("GetUserInfo");
+                }));
+            }
+            else {
+                this.Dispatcher.BeginInvoke(new Action(() => {
+                    this.Title = "湘西州专业技术人员公需科目考试作答系统V1.0 [正在尝试连接服务器....]";
+                    btn_start.IsEnabled = false;
+                }));
+            }
+        }
+
         void InitFormData()
         {
             LoadStudentInfo();
@@ -131,11 +181,12 @@ namespace ExamTextServer
         /// <param name="e"></param>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            btn_start.Visibility = Visibility.Collapsed;
-            time_paner.Visibility = Visibility.Visible;
-            //先获取数据
-            Post_ActionTime(ActionTime);//启动结束时间
-            Post_IintData(AddQuesBtn);//启动题号
+            //btn_start.Visibility = Visibility.Collapsed;
+            //time_paner.Visibility = Visibility.Visible;
+            ////先获取数据
+            //Post_ActionTime(ActionTime);//启动结束时间
+            //Post_IintData(AddQuesBtn);//启动题号
+            ExTCP.SendMsg("ask");
         }
     }
 }
