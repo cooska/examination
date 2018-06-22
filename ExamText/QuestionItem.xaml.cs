@@ -23,5 +23,25 @@ namespace ExamTextServer
         {
             InitializeComponent();
         }
+        string _Q_idx = "";
+        public string Q_idx
+        {
+            get { return _Q_idx; }
+            set { _Q_idx = value;
+                q_idx.Text = value;
+            }
+        }
+        public static readonly DependencyProperty C_QidxProperty =
+       DependencyProperty.Register("Q_idx", typeof(string), typeof(QuestionItem), new PropertyMetadata(null));
+        string _Q_title = "";
+        public string Q_title
+        {
+            get { return _Q_title; }
+            set { _Q_title = value;
+                q_item.Text = value;
+            }
+        }
+        public static readonly DependencyProperty C_QtitleProperty =
+       DependencyProperty.Register("Q_title", typeof(string), typeof(QuestionItem), new PropertyMetadata(null));
     }
 }

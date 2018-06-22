@@ -10,8 +10,8 @@ namespace Dataport
 {
     public class DataCenter
     {
-        //const string constr = @"server='120.76.157.73'; userid='root'; password='wdxqm.exam';database='exami';Charset=utf8;";
-        const string constr = @"server='sql.t249.vhostgo.com'; userid='coos45'; password='westdata.45';database='coos45';Charset=utf8;port=3306;";
+        const string constr = @"server='120.76.157.73'; userid='root'; password='wdxqm.exam';database='exami';Charset=utf8;";
+        //const string constr = @"server='sql.t249.vhostgo.com'; userid='coos45'; password='westdata.45';database='coos45';Charset=utf8;port=3306;";
         static DataCenter _Instans = null;
         public static DataCenter Instans
         {

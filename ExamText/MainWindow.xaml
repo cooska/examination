@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ExamTextServer"
         mc:Ignorable="d" 
-        Title="湘西州专业技术人员公需科目考试作答系统V1.0" Height="660" Width="1000"  WindowStartupLocation="CenterScreen">
+        Title="湘西州专业技术人员公需科目考试作答系统V1.0 [正在连接考试服务器....]" Height="660" Width="1000"  WindowStartupLocation="CenterScreen">
     <!--ResizeMode="NoResize" ShowInTaskbar="False" WindowStyle="None" WindowState="Maximized" -->
     <Window.Resources>
         <Style TargetType="Button" x:Key="BtnIcon">
@@ -121,31 +121,31 @@
                 <Image x:Name="ks_img"  Stretch="Uniform"  Height="220" Width="200" Margin="0 10 0 0"></Image>
                 <StackPanel Orientation="Horizontal" Margin="14 30 0 0">
                     <TextBlock Text="考生姓名:"></TextBlock>
-                    <TextBlock x:Name="ks_name" Text="张三" Margin="5 0 0 0"></TextBlock>
+                    <TextBlock x:Name="ks_name" Text="" Margin="5 0 0 0"></TextBlock>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="14 20 0 0">
                     <TextBlock Text="性别:"></TextBlock>
-                    <TextBlock x:Name="ks_xb" Text="男" Margin="5 0 0 0"></TextBlock>
+                    <TextBlock x:Name="ks_xb" Text="" Margin="5 0 0 0"></TextBlock>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="14 20 0 0">
                     <TextBlock Text="身份证号:"></TextBlock>
-                    <TextBlock x:Name="ks_sfz" Text="43310198818818887" Margin="5 0 0 0"></TextBlock>
+                    <TextBlock x:Name="ks_sfz" Text="" Margin="5 0 0 0"></TextBlock>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="14 20 0 0">
                     <TextBlock Text="考生单位:"></TextBlock>
-                    <TextBlock x:Name="ks_dw" Text="吉首就业局" Margin="5 0 0 0"></TextBlock>
+                    <TextBlock x:Name="ks_dw" Text="" Margin="5 0 0 0"></TextBlock>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="14 20 0 0">
                     <TextBlock Text="考生属地:"></TextBlock>
-                    <TextBlock x:Name="ks_sd" Text="州直" Margin="5 0 0 0"></TextBlock>
+                    <TextBlock x:Name="ks_sd" Text="" Margin="5 0 0 0"></TextBlock>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="14 20 0 0">
                     <TextBlock Text="准考证号:"></TextBlock>
-                    <TextBlock x:Name="ks_zkzh" Text="89779709" Margin="5 0 0 0"></TextBlock>
+                    <TextBlock x:Name="ks_zkzh" Text="" Margin="5 0 0 0"></TextBlock>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="14 20 0 0">
                     <TextBlock Text="座位号:"></TextBlock>
-                    <TextBlock x:Name="ks_zwh" Text="09" Margin="5 0 0 0"></TextBlock>
+                    <TextBlock x:Name="ks_zwh" Text="" Margin="5 0 0 0"></TextBlock>
                 </StackPanel>
                 <Button x:Name="btn_start" IsEnabled="False" Style="{StaticResource Popwin_Button}" Width="120" Height="36" FontSize="16" Margin="0 50 0 0" Content="点击开考" Click="Button_Click"></Button>
                 <StackPanel x:Name="time_paner" Orientation="Vertical" Visibility="Collapsed" Margin="0 40 0 0">
@@ -160,19 +160,21 @@
                 <RowDefinition Height="200"></RowDefinition>
             </Grid.RowDefinitions>
             <Border Grid.Row="0">
-                <StackPanel Orientation="Vertical" Margin="20 0 20 0">
-                    <TextBlock Margin="0 20 0 0" FontSize="16" Text="2:(单选题)阿打发的连接爱可登附近三分肯定是放假了肯定撒解放算减肥快点撒法第三方肯定撒解放埃里克的数据分类肯定撒解放了肯定撒" TextWrapping="Wrap"></TextBlock>
-                    <StackPanel Orientation="Vertical">
-                        <local:QuestionItem Margin="0 20 0 0" />
-                        <local:QuestionItem Margin="0 20 0 0" />
-                        <local:QuestionItem Margin="0 20 0 0" />
-                        <local:QuestionItem Margin="0 20 0 0" />
+                <Grid VerticalAlignment="Stretch" Margin="20 10 10 0" HorizontalAlignment="Stretch">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="60"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <TextBlock x:Name="q_title" Grid.Row="0" Margin="0 20 0 0" FontSize="20" Text="" TextWrapping="Wrap"></TextBlock>
+                    <StackPanel x:Name="q_list" Grid.Row="1" Orientation="Vertical" VerticalAlignment="Top" Margin="0 16 0 0">
+                       <!--动态加载试题-->
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0 40 20 0" HorizontalAlignment="Right">
-                        <Button x:Name="btn_up" Style="{StaticResource Popwin_Button}" Width="90" Height="28" FontSize="14" Margin="0 0 0 0" Content="上一题" ></Button>
-                        <Button x:Name="btn_dwom" Style="{StaticResource Popwin_Button}" Width="90" Height="28" FontSize="14" Margin="40 0 0 0" Content="下一题"></Button>
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Bottom" Margin="0 0 10 20" HorizontalAlignment="Right">
+                        <Button x:Name="btn_up" Visibility="Collapsed" Style="{StaticResource Popwin_Button}" Width="90" Height="28" FontSize="14" Margin="0 0 0 0" Content="上一题" Click="btn_up_Click" ></Button>
+                        <Button x:Name="btn_dwom" Visibility="Collapsed"  Style="{StaticResource Popwin_Button}" Width="90" Height="28" FontSize="14" Margin="40 0 0 0" Content="下一题" Click="btn_dwom_Click"></Button>
                     </StackPanel>
-                </StackPanel>
+                </Grid>
             </Border>
             <Border Grid.Row="1" BorderBrush="#919191" BorderThickness="0 1 0 0">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="5 0 0 0">

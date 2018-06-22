@@ -33,6 +33,18 @@ namespace ExamTextServer
         public delegate void dlg_isGetUserInfo(root userinfo);
         public event dlg_isGetUserInfo On_isGetUserInfo;
         string Path = AppDomain.CurrentDomain.BaseDirectory + "Err.txt";
+        delegate void dlg_ActionWork();
+        NetworkStream networkStream = null;
+        StringBuilder sb = new StringBuilder();
+        void PostActionWork(dlg_ActionWork hd)
+        {
+            hd.BeginInvoke(CallBackActionWork, hd);
+        }
+        void CallBackActionWork(IAsyncResult ast)
+        {
+            dlg_ActionWork hd = (dlg_ActionWork)ast.AsyncState;
+            hd.EndInvoke(ast);
+        }
         // tcp通信对象
         private TcpClient tcpClient;
         // tcp通信中读取数据的对象
@@ -69,10 +81,6 @@ namespace ExamTextServer
             {
                 //实例对象
                 tcpClient = new TcpClient(IP, port);
-                //获取服务端消息
-                Thread threadServer = new Thread(new ThreadStart(GetServerMsg));
-                threadServer.IsBackground = true;
-                threadServer.Start();
                 if (On_isConToServer!=null)
                 {
                     On_isConToServer(true);
@@ -88,10 +96,15 @@ namespace ExamTextServer
                 Thread.Sleep(1000);
                 Connect();
             }
-            //与后台保持连接
-            Thread threadHeart = new Thread(new ThreadStart(SendHeart));
+            //增开线程维护消息收发
+            Thread threadHeart = new Thread(new ThreadStart(ActionWork));
             threadHeart.IsBackground = true;
             threadHeart.Start();
+        }
+        void ActionWork()
+        {
+            PostActionWork(GetServerMsg);//收
+            PostActionWork(SendHeart);//心跳发送
         }
         void GetServerMsg()
         {
@@ -100,17 +113,18 @@ namespace ExamTextServer
                 try
                 {
                     Byte[] buffer = new Byte[512];
-                    NetworkStream networkStream = tcpClient.GetStream();
+                    networkStream = tcpClient.GetStream();
                     bw = new BinaryWriter(networkStream);
                     //将网络流作为二进制读写对象
-                    StringBuilder sb = new StringBuilder();
+                    sb.Clear();
                     int bytesRead = 0;
                     do
                     {
-                        Thread.Sleep(20);
-                        bytesRead = networkStream.Read(buffer, 0, buffer.Length);
-                        sb.Append(System.Text.Encoding.Default.GetString(buffer, 0, bytesRead));
+                       Thread.Sleep(10);
+                       bytesRead = networkStream.Read(buffer, 0, buffer.Length);
+                       sb.Append(UTF8Encoding.UTF8.GetString(buffer, 0, bytesRead));
                     } while (bytesRead == 512);
+                    bw.Flush();
                     DoActionByMes(sb.ToString());
                 }
                 catch (Exception ex)
@@ -122,18 +136,12 @@ namespace ExamTextServer
         }
         void DoActionByMes(string msg)
         {
-            if (msg!="hello")
+            if (msg!="hello"&&msg!="")
             {
                 var item = JsonConvert.DeserializeObject<root>(msg);
-                if (item.user_info != null)
+                if (On_isGetUserInfo != null)
                 {
-                    if (On_isGetUserInfo!=null) {
-                        On_isGetUserInfo(item);
-                    }
-                }
-                else if (item.question_list!=null)
-                {
-
+                    On_isGetUserInfo(item);
                 }
             }
         }
@@ -167,11 +175,11 @@ namespace ExamTextServer
         {
             while (true)
             {
-                Thread.Sleep(5000);
+                Thread.Sleep(800);
                 SendMsg("0000");
             }
         }
-
+        static object xxxx = new object();
         /// <summary>
         /// 发送消息到服务器的方法，带发送长度
         /// </summary>
@@ -180,7 +188,7 @@ namespace ExamTextServer
         {
             try
             {
-                byte[] msg = Encoding.Default.GetBytes(msgs);
+                byte[] msg = UTF8Encoding.UTF8.GetBytes(msgs);
                 //然后将字节数组写入网络流
                 if (bw != null && tcpClient.Connected == true)
                 {
@@ -197,13 +205,13 @@ namespace ExamTextServer
                 }
                 else
                 {
-                    this.Reconnect();
+                   //this.Reconnect();
                 }
             }
             catch (Exception ex)
             {
                 tcpClient.Close();//关闭连接在重新连
-                this.Reconnect();
+                //this.Reconnect();
                 WriteErr("发送消息到服务器出错：" + Environment.NewLine + "SendMsg" + ex.ToString());
             }
         }

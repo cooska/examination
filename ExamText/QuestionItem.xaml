@@ -65,9 +65,9 @@
         </Style>
     </UserControl.Resources>
     <Grid>
-        <StackPanel Orientation="Horizontal" TextBlock.FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Left" >
-            <TextBlock Text="A"></TextBlock>
-            <TextBlock Margin="6 0 0 0" Text="在我国的男打死了房间的上来开发打扫房间的上来开发大神阿里客服大神吉拉上来看风景的酸辣粉" TextWrapping="Wrap"></TextBlock>
+        <StackPanel Orientation="Horizontal" TextBlock.FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Left" >
+            <TextBlock x:Name="q_idx" Text="A、"></TextBlock>
+            <TextBlock x:Name="q_item" Margin="6 0 0 0" Text="" TextWrapping="Wrap"></TextBlock>
             <CheckBox Style="{StaticResource P_CheckChoesItem}" Margin="10 0 0 0" Height="16" IsChecked="False" Width="16" BorderThickness="2" BorderBrush="#333"></CheckBox>
         </StackPanel>
     </Grid>
