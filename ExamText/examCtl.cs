@@ -22,7 +22,7 @@ namespace ExamTextServer
 {
     public class examCtl
     {
-
+      
     }
     public class root
     {
@@ -57,9 +57,13 @@ namespace ExamTextServer
         /// </summary>
         public string isright { get; set; }
     }
-
+    
     public class question_list
     {
+        /// <summary>
+        /// 索引
+        /// </summary>
+       public sbyte Idx { get; set; }
         /// <summary>
         /// Id
         /// </summary>

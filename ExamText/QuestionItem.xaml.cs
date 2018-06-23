@@ -23,6 +23,10 @@ namespace ExamTextServer
         {
             InitializeComponent();
         }
+        /// <summary>
+        /// 选型编号
+        /// </summary>
+        public sbyte Q_Idx { get; set; }
         string _Q_idx = "";
         public string Q_idx
         {
@@ -43,5 +47,13 @@ namespace ExamTextServer
         }
         public static readonly DependencyProperty C_QtitleProperty =
        DependencyProperty.Register("Q_title", typeof(string), typeof(QuestionItem), new PropertyMetadata(null));
+        bool _Q_isCheack = false;
+        public bool Q_isCheack
+        {
+            get { return (bool)q_ck.IsChecked; }
+
+        }
+        public static readonly DependencyProperty C_Q_isCheackProperty =
+       DependencyProperty.Register("Q_isCheack", typeof(bool), typeof(QuestionItem), new PropertyMetadata(null));
     }
 }

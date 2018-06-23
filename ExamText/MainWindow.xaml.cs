@@ -42,7 +42,15 @@ namespace ExamTextServer
         /// <summary>
         /// 当前试题索引
         /// </summary>
-        byte CurQueIdx = 0;
+        sbyte CurQueIdx = 0;
+        /// <summary>
+        /// 计算分数用
+        /// </summary>
+        List<Qlist> TempScorelist = new List<Qlist>();
+        /// <summary>
+        /// 考试得分
+        /// </summary>
+        sbyte SumScore = 0;
         void Post_ActionTime(dlg_ActionTime hd)
         {
             hd.BeginInvoke(ActoinTimeCallBack, hd);
@@ -170,7 +178,7 @@ namespace ExamTextServer
                 sbyte i = 0;
                 foreach (var item in list)
                 {
-                    Button xx = new Button() { Style = btn_style, IsEnabled = false, Width = 26, Height = 26, Tag=item.id,Content = (i + 1).ToString(), Background = new SolidColorBrush(color), Margin = new Thickness(6, 6, 10, 0) };
+                    Button xx = new Button() { Style = btn_style, IsEnabled = false, Width = 26, Height = 26, Tag=string.Format("{0},{1}", item.id,i),Content = (i + 1).ToString(), Background = new SolidColorBrush(color), Margin = new Thickness(6, 6, 10, 0) };
                     btn_idx.Children.Add(xx);
                     i++;
                 }
@@ -190,7 +198,7 @@ namespace ExamTextServer
         /// <param name="item">题目集合</param>
         /// <param name="idx">题目索引</param>
         /// <param name="ct">题目总数</param>
-        void SetQustion(question_list item,byte idx,sbyte ct)
+        void SetQustion(question_list item,sbyte idx,sbyte ct)
         {
             q_title.Text = "";
             q_title.Inlines.Add(string.Format("{0}、", (idx+1)));
@@ -225,7 +233,12 @@ namespace ExamTextServer
         private void btn_idx_Click(object sender, RoutedEventArgs e)
         {
             Button btn = e.OriginalSource as Button;
-            string Nav_name = btn.Tag.ToString();
+            string[] ids = btn.Tag.ToString().Split(',');
+            GetScore(QuseList[CurQueIdx]);//先计算当前得分
+            var item = QuseList.Find(s => s.id == int.Parse(ids[0]));
+            CurQueIdx = sbyte.Parse(ids[1]);//索引赋值
+            SetQustion(QuseList[CurQueIdx], CurQueIdx, (sbyte)QuseList.Count);//对应试题跳转
+
         }
         /// <summary>
         /// 开始考试
@@ -239,15 +252,35 @@ namespace ExamTextServer
 
         private void btn_dwom_Click(object sender, RoutedEventArgs e)
         {
+            GetScore(QuseList[CurQueIdx]);//先计算分数
             CurQueIdx++;
             SetQustion(QuseList[CurQueIdx], CurQueIdx,(sbyte)QuseList.Count);
-           
         }
-
+        
         private void btn_up_Click(object sender, RoutedEventArgs e)
         {
+            GetScore(QuseList[CurQueIdx]);//先计算分数
             CurQueIdx--;
             SetQustion(QuseList[CurQueIdx], CurQueIdx, (sbyte)QuseList.Count);
+        }
+        
+        /// <summary>
+        /// 计算得分
+        /// </summary>
+        /// <param name="item"></param>
+        void GetScore(question_list item)
+        {
+            TempScorelist.Clear();
+            foreach (var c in q_list.Children)
+            {
+                QuestionItem qc = (QuestionItem)c;
+                TempScorelist.Add(new Qlist() { anwser = qc.Q_title, isright = qc.Q_isCheack.ToString() });
+            }
+            bool rst = item.qlist.Equals(TempScorelist);
+            if (rst)
+            {
+                SumScore++;
+            }
         }
     }
 }
