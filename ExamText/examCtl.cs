@@ -32,7 +32,7 @@ namespace ExamTextServer
         /// <summary>
         /// 考试分数
         /// </summary>
-        public sbyte fs { get; set; }
+        public sbyte score { get; set; }
     }
     public class userinfo
     {
@@ -56,6 +56,11 @@ namespace ExamTextServer
         /// true
         /// </summary>
         public string isright { get; set; }
+        bool _anright = false;
+        /// <summary>
+        /// 回答
+        /// </summary>
+        public bool anright { get { return _anright; } set { _anright = value; } }
     }
     
     public class question_list

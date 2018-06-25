@@ -136,12 +136,16 @@ namespace ExamTextServer
         }
         void DoActionByMes(string msg)
         {
-            if (msg!="hello"&&msg!="")
+            if (msg.IndexOf("@@@")>=0&&msg.LastIndexOf("###")!=-1)
             {
-                var item = JsonConvert.DeserializeObject<root>(msg);
-                if (On_isGetUserInfo != null)
+                msg = msg.Substring(3,(msg.Length-6));
+                if (msg != "hello" && msg != "")
                 {
-                    On_isGetUserInfo(item);
+                    var item = JsonConvert.DeserializeObject<root>(msg);
+                    if (On_isGetUserInfo != null)
+                    {
+                        On_isGetUserInfo(item);
+                    }
                 }
             }
         }
@@ -175,7 +179,7 @@ namespace ExamTextServer
         {
             while (true)
             {
-                Thread.Sleep(800);
+                Thread.Sleep(3000);
                 SendMsg("0000");
             }
         }
@@ -188,6 +192,7 @@ namespace ExamTextServer
         {
             try
             {
+                msgs = string.Format("@@@{0}###",msgs);
                 byte[] msg = UTF8Encoding.UTF8.GetBytes(msgs);
                 //然后将字节数组写入网络流
                 if (bw != null && tcpClient.Connected == true)

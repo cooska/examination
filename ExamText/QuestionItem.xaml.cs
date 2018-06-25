@@ -51,7 +51,9 @@ namespace ExamTextServer
         public bool Q_isCheack
         {
             get { return (bool)q_ck.IsChecked; }
-
+            set { _Q_isCheack = value;
+                q_ck.IsChecked = value;
+            }
         }
         public static readonly DependencyProperty C_Q_isCheackProperty =
        DependencyProperty.Register("Q_isCheack", typeof(bool), typeof(QuestionItem), new PropertyMetadata(null));
