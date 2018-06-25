@@ -26,6 +26,14 @@ namespace ExamTextServer
     }
     public class root
     {
+        /// <summary>
+        /// 考试剩余时间(分钟)
+        /// </summary>
+        public sbyte fz { get; set; }
+        /// <summary>
+        /// 考试剩余时间(秒钟)
+        /// </summary>
+        public sbyte mz { get; set; }
         public sbyte model_type { get; set; }
         public userinfo user_info { get; set; }
         public List<question_list> question_list { get; set; }

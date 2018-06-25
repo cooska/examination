@@ -22,7 +22,7 @@ namespace ExamTextServer
     /// </summary>
     public partial class MainWindow : Window
     {
-#region 变量定义
+        #region 变量定义
         /// <summary>
         /// 考试总时间(分钟)
         /// </summary>
@@ -67,7 +67,7 @@ namespace ExamTextServer
         /// 试题选项控件
         /// </summary>
         QuestionItem qc = null;
-#endregion
+        #endregion
         void Post_ActionTime(dlg_ActionTime hd)
         {
             hd.BeginInvoke(ActoinTimeCallBack, hd);
@@ -76,7 +76,7 @@ namespace ExamTextServer
         {
             dlg_ActionTime hd = (dlg_ActionTime)ars.AsyncState;
             hd.EndInvoke(ars);
-            MessageBox.Show("考试结束");
+            SubMit();
         }
         void Post_IintData(dlg_ActionTime hd)
         {
@@ -121,7 +121,14 @@ namespace ExamTextServer
             }
             else//设置考试信息
             {
-                AddQuesBtn(Info.question_list);
+                if (ExTCP.HasQuseFile)
+                {
+
+                }
+                else {
+                   AddQuesBtn(Info.question_list);
+                }
+               
             }
         }
         /// <summary>
@@ -138,6 +145,8 @@ namespace ExamTextServer
                 ks_sfz.Text = userinfo.user_card;
                 ks_dw.Text = userinfo.user_work_str;
                 ks_sd.Text = userinfo.user_place_str;
+                ks_zkzh.Text = userinfo.exam_card;
+                ks_zwh.Text = userinfo.exam_card.Substring(userinfo.exam_card.Length-2,2);
                 btn_start.Visibility = Visibility.Visible;
                 this.Title = "湘西州专业技术人员公需科目考试作答系统V1.0 [已成功连接考试服务器]";
             }));
@@ -171,7 +180,11 @@ namespace ExamTextServer
             }
         }
 
-       
+        string SplitTime(double fz)
+        {
+            var t = new TimeSpan(0, 0, 0, (int)fz);
+            return string.Format("{0:00}:{1:00}:{2:00}", t.Hours, t.Minutes, t.Seconds);
+        }
         void ActionTime()
         {
             DateTime fiveM = DateTime.Parse(string.Format("00:{0}:59", (SumTime - 1)));
@@ -182,6 +195,7 @@ namespace ExamTextServer
                 {
                     fiveM = fiveM.AddSeconds(-1);
                     ks_time.Text = string.Format("{0}分{1}秒", fiveM.Minute.ToString("00"), fiveM.Second.ToString("00"));
+                    WriteQuse((sbyte)fiveM.Minute,(sbyte)fiveM.Second);
                     if (ks_time.Text == "00分00秒")
                     {
                         IsBreak = true;
@@ -193,6 +207,14 @@ namespace ExamTextServer
                 }
                 Thread.Sleep(1000);
             }
+        }
+        /// <summary>
+        /// 写入考试信息
+        /// </summary>
+        void WriteQuse(sbyte fz,sbyte mz)
+        {
+           root rt = new root() { fz = fz,mz = mz, model_type= 2, score = SumScore, question_list = QuseList };
+           ExTCP.WriteQuse(rt);
         }
         void AddQuesBtn(List<question_list> list)
         {
@@ -211,11 +233,11 @@ namespace ExamTextServer
                 btn_dwom.Visibility = Visibility.Visible;
                 btn_up.Visibility = Visibility.Visible;
                 CurQueIdx = 0;//设置默认当前试题索引
-                SetQustion(list[0], 0, (sbyte)list.Count);
                 Post_ActionTime(ActionTime);//启动考试结束时间
                 btn_start.IsEnabled = true;
                 btn_save.Visibility = Visibility.Visible;
                 this.Title = "湘西州专业技术人员公需科目考试作答系统V1.0 [已获取试题信息请认真作答]";
+                SetQustion(list[0], 0, (sbyte)list.Count);
             }));
         }
         string[] qidx_arr = new string[] { "A、", "B、", "C、", "D、", "E、", "F、", "G、", "H、" };
@@ -237,9 +259,11 @@ namespace ExamTextServer
             foreach (var qitem in item.qlist)
             {
                 QuestionItem qq = new QuestionItem() { Margin = new Thickness(0,20,0,0) };
+                qq.Q_ID = item.id;
                 qq.Q_idx = qidx_arr[i];
                 qq.Q_title = qitem.anwser;
                 qq.Q_isCheack = qitem.anright;
+                qq.On_dlg_Cheacked += Qq_On_dlg_Cheacked;
                 q_list.Children.Add(qq);
                 i++;
             }
@@ -260,15 +284,23 @@ namespace ExamTextServer
             }
 
         }
+        //作答
+        private void Qq_On_dlg_Cheacked(int id)
+        {
+            //计算得分
+            if (GetScore(QuseList[CurQueIdx]))
+            {
+                SetBtnsColor(CurQueIdx);//启用已作答试题Button按钮
+            }
+        }
+
         private void btn_idx_Click(object sender, RoutedEventArgs e)
         {
             Button btn = e.OriginalSource as Button;
             string[] ids = btn.Tag.ToString().Split(',');
-            if (GetScore(QuseList[CurQueIdx]))//先计算当前得分
-            {
-                CurQueIdx = sbyte.Parse(ids[1]);//索引赋值
-                SetQustion(QuseList[CurQueIdx], CurQueIdx, (sbyte)QuseList.Count);//对应试题跳转
-            }
+            //GetScore(QuseList[CurQueIdx]);//先计算当前得分
+            CurQueIdx = sbyte.Parse(ids[1]);//索引赋值
+            SetQustion(QuseList[CurQueIdx], CurQueIdx, (sbyte)QuseList.Count);//对应试题跳转
         }
         /// <summary>
         /// 开始考试
@@ -331,9 +363,14 @@ namespace ExamTextServer
                 }
                 idx++;
             }
-            if (right_ct==0)
+            if(item.qtype==1&& right_ct>1)
             {
-                MessageBox.Show("请勾选作答!");
+                MessageBox.Show(" \"单选题\" 只能作答一个选项!");
+                return false;
+            }
+            if ( item.qtype == 2 && right_ct < 2 )
+            {
+                MessageBox.Show(" \"多选题\" 至少作答2个选项!");
                 return false;
             }
             //无论单选或者多选必须全部答对才计分
@@ -348,21 +385,29 @@ namespace ExamTextServer
         {
             if (MessageBox.Show("已经认真检查好,确定交卷！","操作提示!", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
-                MessageBox.Show("家里了");
+                SubMit();
             }
         }
-
+        /// <summary>
+        /// 提交试卷
+        /// </summary>
+        void SubMit()
+        {
+            ExTCP.DeQuseFile();
+            MessageBox.Show("家里了");
+            this.IsEnabled = false;
+        }
         private void btn_save_Click(object sender, RoutedEventArgs e)
         {
-            if (GetScore(QuseList[CurQueIdx]))//先计算分数
-            {
+            //if (GetScore(QuseList[CurQueIdx]))//先计算分数
+            //{
                 SetBtnsColor(CurQueIdx);//启用试题Button按钮
                 if (CurQueIdx < (QuseList.Count - 1))
                 {
                     CurQueIdx++;
                     SetQustion(QuseList[CurQueIdx], CurQueIdx, (sbyte)QuseList.Count);
                 }
-            }
+            //}
         }
     }
 }

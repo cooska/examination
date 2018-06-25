@@ -19,10 +19,16 @@ namespace ExamTextServer
     /// </summary>
     public partial class QuestionItem : UserControl
     {
+        public delegate void dlg_Cheacked(int id);
+        public event dlg_Cheacked On_dlg_Cheacked;
         public QuestionItem()
         {
             InitializeComponent();
         }
+        /// <summary>
+        /// 试题编号
+        /// </summary>
+        public int Q_ID { get; set; }
         /// <summary>
         /// 选型编号
         /// </summary>
@@ -57,5 +63,13 @@ namespace ExamTextServer
         }
         public static readonly DependencyProperty C_Q_isCheackProperty =
        DependencyProperty.Register("Q_isCheack", typeof(bool), typeof(QuestionItem), new PropertyMetadata(null));
+
+        private void q_ck_Click(object sender, RoutedEventArgs e)
+        {
+            if ( On_dlg_Cheacked != null )
+            {
+                On_dlg_Cheacked(Q_ID);
+            }
+        }
     }
 }

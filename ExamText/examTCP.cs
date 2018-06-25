@@ -13,6 +13,7 @@
 *******************************************************************
 //----------------------------------------------------------------*/
 #endregion
+using Maticsoft.Common.DEncrypt;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -33,6 +34,7 @@ namespace ExamTextServer
         public delegate void dlg_isGetUserInfo(root userinfo);
         public event dlg_isGetUserInfo On_isGetUserInfo;
         string Path = AppDomain.CurrentDomain.BaseDirectory + "Err.txt";
+        string QPath = AppDomain.CurrentDomain.BaseDirectory + "cfg.txt";
         delegate void dlg_ActionWork();
         NetworkStream networkStream = null;
         StringBuilder sb = new StringBuilder();
@@ -162,6 +164,43 @@ namespace ExamTextServer
                 sw.WriteLine(msg);
                 sw.Close();
                 sw.Dispose();
+            }
+        }
+        static object LckQ = new object();
+        /// <summary>
+        /// 时时写入考试作答情况
+        /// </summary>
+        /// <param name="rt"></param>
+        public void WriteQuse(root rt)
+        {
+            string msg = JsonConvert.SerializeObject(rt);
+            msg = DESEncrypt.Encrypt(msg);
+            if (!File.Exists(QPath))
+            {
+                File.Create(QPath);
+            }
+            lock (LckQ)
+            {
+                StreamWriter sw = new StreamWriter(QPath, true, Encoding.UTF8);
+                sw.WriteLine(msg);
+                sw.Close();
+                sw.Dispose();
+            }
+        }
+        /// <summary>
+        /// 删除考试记录文件
+        /// </summary>
+        public void DeQuseFile()
+        {
+            File.Delete(QPath);
+        }
+        /// <summary>
+        /// 判断是否存在考试记录文件
+        /// </summary>
+        public bool HasQuseFile
+        {
+            get {
+              return File.Exists(QPath);
             }
         }
         /// <summary>
