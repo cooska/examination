@@ -279,6 +279,7 @@ function AddQues() {
         return;
     }
     var content = $("#qcontent").val();
+    content = content.trim().replace(/\n/g,"<br>");
     if (content == "") {
         alert("请输入题干!");
         return;
@@ -346,6 +347,7 @@ function UpQues() {
         return;
     }
     var content = $("#qcontent").val();
+    content = content.trim().replace(/\n/g, "<br>");
     if (content == "") {
         alert("请输入题干!");
         return;
@@ -399,8 +401,9 @@ function SetUpPaner(id) {
     var tr = $('#tr_' + id);
     var td_list = $(tr).find("td");
     var questp = $(td_list[0]).attr("data-original");
-    var content = $(td_list[1]).text();
-    content = content;
+    var content = $(td_list[1]).html();
+    content = content.replaceAll("<br>", "\r\n");
+    content = HTMLDeCode(content);
     var arr = $(td_list[1]).attr("data-original").split(',');
     var mid = arr[0];
     $("#up_ctr_module").val(mid);
