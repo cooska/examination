@@ -134,7 +134,7 @@ function addChoseItem(id) {
         var ul_ctr = $("." + id);
         var count = $(ul_ctr).find("li");
         count = count.length;
-        if (count < 5) {
+        if (count < 2) {
             $(".quse_ul li img").hide();
         }
         else {
@@ -214,7 +214,7 @@ function addChoseItems(id,content,isright) {
         var ul_ctr = $("." + id);
         var count = $(ul_ctr).find("li");
         count = count.length;
-        if (count < 5) {
+        if (count < 2) {
             $(".quse_ul li img").hide();
         }
         else {
@@ -236,7 +236,7 @@ function DeChoseItem(s) {
     var count = $(ul_ctr).find("li");
     count = count.length;
     count = parseInt(count);
-    if (count < 5) {
+    if (count < 2) {
         $(".quse_ul li img").hide();
     }
     else {
@@ -453,7 +453,7 @@ function addknowledgeItem(id) {
         var ul_ctr = $("." + id);
         var count = $(ul_ctr).find("li");
         count = count.length;
-        if (count < 5) {
+        if (count < 2) {
             $(".knowledge_ul li img").hide();
         }
         else {
@@ -472,7 +472,7 @@ function Deknowledge(s) {
     var count = $(ul_ctr).find("li");
     count = count.length;
     count = parseInt(count);
-    if (count < 5) {
+    if (count < 2) {
         $(".knowledge_ul li img").hide();
     }
     else {

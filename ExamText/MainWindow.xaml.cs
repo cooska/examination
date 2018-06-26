@@ -67,6 +67,10 @@ namespace ExamTextServer
         /// 试题选项控件
         /// </summary>
         QuestionItem qc = null;
+        /// <summary>
+        /// 全局选项点击次数
+        /// </summary>
+        int click_ct = 0;
         #endregion
         void Post_ActionTime(dlg_ActionTime hd)
         {
@@ -287,6 +291,7 @@ namespace ExamTextServer
         //作答
         private void Qq_On_dlg_Cheacked(int id)
         {
+            click_ct++;
             //计算得分
             if (GetScore(QuseList[CurQueIdx]))
             {
@@ -301,6 +306,7 @@ namespace ExamTextServer
             //GetScore(QuseList[CurQueIdx]);//先计算当前得分
             CurQueIdx = sbyte.Parse(ids[1]);//索引赋值
             SetQustion(QuseList[CurQueIdx], CurQueIdx, (sbyte)QuseList.Count);//对应试题跳转
+            click_ct = 0;//点击清零
         }
         /// <summary>
         /// 开始考试
@@ -332,12 +338,14 @@ namespace ExamTextServer
         {
             CurQueIdx++;
             SetQustion(QuseList[CurQueIdx], CurQueIdx, (sbyte)QuseList.Count);
+            click_ct = 0;
         }
 
         private void btn_up_Click(object sender, RoutedEventArgs e)
         {
             CurQueIdx--;
             SetQustion(QuseList[CurQueIdx], CurQueIdx, (sbyte)QuseList.Count);
+            click_ct = 0;
         }
         
         /// <summary>
@@ -353,26 +361,30 @@ namespace ExamTextServer
                 TempScorelist.Add(new Qlist() { anwser = qc.Q_title, anright = qc.Q_isCheack });
             }
             sbyte idx = 0;
+            sbyte right_idx = 0;
             sbyte right_ct = 0;
             foreach (var qt in item.qlist)
             {
                 qt.anright = TempScorelist[idx].anright;
                 if (qt.isright.ToLower()=="true" && TempScorelist[idx].anright.ToString().ToLower()=="true")
                 {
+                    right_idx = idx;
                     right_ct++;
                 }
                 idx++;
             }
-            if(item.qtype==1&& right_ct>1)
+            if(item.qtype==1&& click_ct>1)
             {
+                item.qlist[right_idx].isright ="false";
+
                 MessageBox.Show(" \"单选题\" 只能作答一个选项!");
                 return false;
             }
-            if ( item.qtype == 2 && right_ct < 2 )
-            {
-                MessageBox.Show(" \"多选题\" 至少作答2个选项!");
-                return false;
-            }
+            //if ( item.qtype == 2 && right_ct < 2 )
+            //{
+            //    MessageBox.Show(" \"多选题\" 至少作答2个选项!");
+            //    return false;
+            //}
             //无论单选或者多选必须全部答对才计分
             if ( (idx>0&&right_ct>0) && (idx ==right_ct) )
             {

@@ -43,7 +43,7 @@ body{background:#E8E9ED;overflow:hidden;}
 .quse_ul li{list-style-type: upper-alpha;height:24px;line-height:24px;margin-bottom:12px;}
 .quse_ul li .li_ckbox{width:20px;margin-left:40px;margin-top:2px;}
 .quse_ul li input{float:left;height:24px;width:520px;font-size:14px;margin-left:2px;color:#333}
-.quse_ul li img{float:left; margin-left:20px; margin-top:4px; cursor:pointer;display:none}
+.quse_ul li img{float:left; margin-left:20px; margin-top:4px; cursor:pointer;}
 .quse_bottom{height:32px;line-height:32px;font-size:14px;background:#E8E9ED;color:#333}
 .quse_bottom td div{margin-left:10px}
 /*知识点样式*/

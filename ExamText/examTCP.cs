@@ -83,7 +83,7 @@ namespace ExamTextServer
             {
                 //实例对象
                 tcpClient = new TcpClient(IP, port);
-                if (On_isConToServer!=null)
+                if (On_isConToServer != null)
                 {
                     On_isConToServer(true);
                 }
@@ -116,15 +116,15 @@ namespace ExamTextServer
                 {
                     Byte[] buffer = new Byte[512];
                     networkStream = tcpClient.GetStream();
-                    bw = new BinaryWriter(networkStream);
+                    bw = new BinaryWriter(networkStream, Encoding.BigEndianUnicode);
                     //将网络流作为二进制读写对象
                     sb.Clear();
                     int bytesRead = 0;
                     do
                     {
-                       Thread.Sleep(10);
-                       bytesRead = networkStream.Read(buffer, 0, buffer.Length);
-                       sb.Append(UTF8Encoding.UTF8.GetString(buffer, 0, bytesRead));
+                        Thread.Sleep(10);
+                        bytesRead = networkStream.Read(buffer, 0, buffer.Length);
+                        sb.Append(Encoding.BigEndianUnicode.GetString(buffer, 0, bytesRead));
                     } while (bytesRead == 512);
                     bw.Flush();
                     DoActionByMes(sb.ToString());
@@ -138,9 +138,9 @@ namespace ExamTextServer
         }
         void DoActionByMes(string msg)
         {
-            if (msg.IndexOf("@@@")>=0&&msg.LastIndexOf("###")!=-1)
+            if (msg.IndexOf("@@@") >= 0 && msg.LastIndexOf("###") != -1)
             {
-                msg = msg.Substring(3,(msg.Length-6));
+                msg = msg.Substring(3, (msg.Length - 6));
                 if (msg != "hello" && msg != "")
                 {
                     var item = JsonConvert.DeserializeObject<root>(msg);
@@ -158,7 +158,7 @@ namespace ExamTextServer
             {
                 File.Create(Path);
             }
-            lock(Lck)
+            lock (Lck)
             {
                 StreamWriter sw = new StreamWriter(Path, true, Encoding.UTF8);
                 sw.WriteLine(msg);
@@ -173,18 +173,15 @@ namespace ExamTextServer
         /// <param name="rt"></param>
         public void WriteQuse(root rt)
         {
-            string msg = JsonConvert.SerializeObject(rt);
-            msg = DESEncrypt.Encrypt(msg);
-            if (!File.Exists(QPath))
-            {
-                File.Create(QPath);
-            }
             lock (LckQ)
             {
-                StreamWriter sw = new StreamWriter(QPath, true, Encoding.UTF8);
+                rt.user_info = null;
+                string msg = JsonConvert.SerializeObject(rt);
+                msg = DESEncrypt.Encrypt(msg);
+                FileStream fs = new FileStream(QPath, FileMode.OpenOrCreate, FileAccess.ReadWrite); //可以指定盘符，也可以指定任意文件名，还可以为word等文件
+                StreamWriter sw = new StreamWriter(fs); // 创建写入流
                 sw.WriteLine(msg);
-                sw.Close();
-                sw.Dispose();
+                 sw.Close(); 
             }
         }
         /// <summary>
@@ -199,8 +196,9 @@ namespace ExamTextServer
         /// </summary>
         public bool HasQuseFile
         {
-            get {
-              return File.Exists(QPath);
+            get
+            {
+                return File.Exists(QPath);
             }
         }
         /// <summary>
@@ -231,8 +229,8 @@ namespace ExamTextServer
         {
             try
             {
-                msgs = string.Format("@@@{0}###",msgs);
-                byte[] msg = UTF8Encoding.UTF8.GetBytes(msgs);
+                msgs = string.Format("@@@{0}###", msgs);
+                byte[] msg = Encoding.BigEndianUnicode.GetBytes(msgs);
                 //然后将字节数组写入网络流
                 if (bw != null && tcpClient.Connected == true)
                 {
@@ -249,7 +247,7 @@ namespace ExamTextServer
                 }
                 else
                 {
-                   //this.Reconnect();
+                    //this.Reconnect();
                 }
             }
             catch (Exception ex)
