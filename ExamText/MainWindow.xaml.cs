@@ -366,19 +366,27 @@ namespace ExamTextServer
             foreach (var qt in item.qlist)
             {
                 qt.anright = TempScorelist[idx].anright;
-                if (qt.isright.ToLower()=="true" && TempScorelist[idx].anright.ToString().ToLower()=="true")
+                if (qt.anright)
                 {
                     right_idx = idx;
+                }
+                if (qt.isright.ToLower()=="true" && TempScorelist[idx].anright.ToString().ToLower()=="true")
+                {
                     right_ct++;
                 }
                 idx++;
             }
             if(item.qtype==1&& click_ct>1)
             {
-                item.qlist[right_idx].isright ="false";
-
-                MessageBox.Show(" \"单选题\" 只能作答一个选项!");
-                return false;
+                item.qlist[right_idx].anright = false;
+                for (sbyte i = 0; i<q_list.Children.Count; i++)
+                {
+                    if (i!= right_idx)
+                    {
+                        qc = (QuestionItem)q_list.Children[i];
+                        qc.Q_isCheack = false;
+                    }
+                }
             }
             //if ( item.qtype == 2 && right_ct < 2 )
             //{
