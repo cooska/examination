@@ -12,7 +12,7 @@
     <script src="js/jquery.min.js"></script>
     <script src="js/help.js"></script>
 </head>
-<body style="background:#fff">
+<body style="background:#fff;">
  <div class="MaskPaner"></div>
  <div class="nav_right_top">
    <div class="flt nav_r_top_title">湘西州专业技术人员公需科目考试系统 V1.0</div>
@@ -22,7 +22,7 @@
      </div>
      <div class="flr singout" onclick="sigout();">退 出 登 陆 </div>
  </div>
-<div class="flt nav_left" style="background:#E8E9ED">
+<div class="flt nav_left" style="background:#E8E9ED;">
     <ul>
         <li class="nav_main">试题管理</li>
         <a href="questionadd.aspx" ><li id="questionadd" class="nav_href">试题录入</li></a>
@@ -35,9 +35,8 @@
         <a href="Results.aspx" ><li id="Results" class="nav_href">考试成绩查询</li></a>
     </ul>
 </div>
-<div class="flt nav_right" style="height:100%;">
-    <div class="nav_right_title"><span style="margin-left:20px"></span></div>
-    
+<div class="flt nav_right" style="height:100%;overflow:auto">
+    <div class="nav_right_title"><span style="margin-left:20px"></span></div>    
     <div style="position:relative">
         <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
       </asp:ContentPlaceHolder>

@@ -24,7 +24,7 @@ function SetView()
     Web_View_height = Web_View_height + (window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0);
     Web_View_height = Web_View_height-60;
     Web_View_width = document.documentElement.clientWidth;
-    nav_right_width = Web_View_width - 240;
+    nav_right_width = Web_View_width - 228;
     $('body').css("height",Web_View_height+"px");
     $(".nav_right").css("width", nav_right_width + "px");
     $(".MaskPaner").css("height", (Web_View_height+60)+"px");
@@ -421,6 +421,8 @@ function SetUpPaner(id) {
     }
     $('#quse_type').val(questp);
     $('#qcontent').val(content);
+    var curTop = $(".nav_right").scrollTop();
+    $(".Edit_paner").css("top", curTop+"px");
     $(".Edit_paner").show();
     //这里必须加
     SetView();
@@ -526,6 +528,8 @@ function SetKlGUpPaner(id)
     content = decodeURIComponent(HTMLDeCode(content));
     $('#quse_type').val(mid);
     $('#qcontent').val(content);
+    var curTop = $(".nav_right").scrollTop();
+    $(".Edit_paner").css("top", curTop + "px");
     $(".Edit_paner").show();
     //这里必须加
     SetView();
@@ -613,11 +617,12 @@ function setmodulekng(mid)
         }
     }
       
-
     var sum = 100;
     var tmp_sum = 0;
+    var curTop = $(".nav_right").scrollTop();
+    $(".Edit_paner").css("top", curTop + "px");
     $(".Edit_paner").show();
-    $("#kng_paner").find("input").change(function () {
+    $("#kng_paner").find("input").change(function (){
         var dx_num = 0;
         var ddx_num = 0;
         var pd_num = 0;

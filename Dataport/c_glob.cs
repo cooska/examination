@@ -19,7 +19,7 @@ namespace Dataport
         /// <summary>
         /// 每页显示条数
         /// </summary>
-        public const int EVERY_PAGE = 6;
+        public const int EVERY_PAGE = 20;
         public string CurentPath
         {
             get
