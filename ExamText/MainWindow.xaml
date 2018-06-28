@@ -147,7 +147,7 @@
                     <TextBlock Text="座位号:"></TextBlock>
                     <TextBlock x:Name="ks_zwh" Text="" Margin="5 0 0 0"></TextBlock>
                 </StackPanel>
-                <Button x:Name="btn_start" Visibility="Collapsed"  Style="{StaticResource Popwin_Button}" Width="120" Height="36" FontSize="16" Margin="0 50 0 0" Content="点击开考" Click="Button_Click"></Button>
+                <Button x:Name="btn_start" Visibility="Collapsed"  Style="{StaticResource Popwin_Button}" Width="120" Height="36" FontSize="16" Margin="0 50 0 0" Content="点击开考"  Click="Button_Click"></Button>
                 <StackPanel x:Name="time_paner" Orientation="Vertical" Visibility="Collapsed" Margin="0 20 0 0">
                     <TextBlock Text="考试剩余时间" FontSize="24" HorizontalAlignment="Center"></TextBlock>
                     <TextBlock x:Name="ks_time" FontSize="22" HorizontalAlignment="Center" Foreground="Red" Text="59分24秒" Margin="0 6 0 0"></TextBlock>
@@ -174,7 +174,6 @@
                     <StackPanel Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Bottom" Margin="0 0 10 20" HorizontalAlignment="Right">
                         <Button x:Name="btn_up" Visibility="Collapsed" Style="{StaticResource Popwin_Button}" Width="90" Height="28" FontSize="14" Margin="0 0 0 0" Content="上一题" Click="btn_up_Click" ></Button>
                         <Button x:Name="btn_dwom" Visibility="Collapsed"  Style="{StaticResource Popwin_Button}" Width="90" Height="28" FontSize="14" Margin="20 0 0 0" Content="下一题" Click="btn_dwom_Click"></Button>
-                        <Button x:Name="btn_save" Visibility="Collapsed"  Style="{StaticResource Popwin_Button}" Width="90" Height="28" FontSize="14" Margin="20 0 0 0" Content="保 存" Click="btn_save_Click" ></Button>
                     </StackPanel>
                 </Grid>
             </Border>

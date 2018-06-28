@@ -50,6 +50,7 @@ namespace ExamTextServer
         public string user_head_img { get; set; }
         public string user_work_str { get; set; }
         public string user_place_str { get; set; }
+        public string start_time { get; set; }
         public string user_phone { get; set; }
         public string user_sex { get; set; }
         public string exam_card { get; set; }
@@ -69,6 +70,7 @@ namespace ExamTextServer
         /// 回答
         /// </summary>
         public bool anright { get { return _anright; } set { _anright = value; } }
+        public int ckTime { get; set; }
     }
     
     public class question_list

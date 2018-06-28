@@ -63,14 +63,15 @@ namespace ExamTextServer
         /// 考试得分
         /// </summary>
         sbyte SumScore = 0;
-        /// <summary>
-        /// 试题选项控件
-        /// </summary>
-        QuestionItem qc = null;
+
         /// <summary>
         /// 全局选项点击次数
         /// </summary>
         int click_ct = 0;
+        /// <summary>
+        /// 全局正确答案标记时间
+        /// </summary>
+        int right_Time = 0;
         #endregion
         void Post_ActionTime(dlg_ActionTime hd)
         {
@@ -122,17 +123,18 @@ namespace ExamTextServer
             if (Info.user_info != null)//用户信息不等于设置用户信息
             {
                 SetUserInfo(Info.user_info);
+                //获取完用户信息马上获取考试信息
+                ExTCP.SendMsg("{\"model_type\":4,\"data\":\"ask\"}");
             }
             else//设置考试信息
             {
-                if (ExTCP.HasQuseFile)
-                {
+                //if (ExTCP.HasQuseFile)
+                //{
 
-                }
-                else {
+                //}
+                //else {
                    AddQuesBtn(Info.question_list);
-                }
-               
+                //}
             }
         }
         /// <summary>
@@ -151,25 +153,34 @@ namespace ExamTextServer
                 ks_sd.Text = userinfo.user_place_str;
                 ks_zkzh.Text = userinfo.exam_card;
                 ks_zwh.Text = userinfo.exam_card.Substring(userinfo.exam_card.Length-2,2);
-                btn_start.Visibility = Visibility.Visible;
-                this.Title = "湘西州专业技术人员公需科目考试作答系统V1.0 [已成功连接考试服务器]";
+                this.Title = "湘西州专业技术人员公需科目考试作答系统V1.0 [正在获取试题信息...]";
             }));
         }
         public BitmapImage LoadImage(byte[] imageData)
         {
-            if (imageData == null || imageData.Length == 0) return null;
             var image = new BitmapImage();
-            using (var mem = new MemoryStream(imageData))
-            {
-                mem.Position = 0;
-                image.BeginInit();
-                image.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
-                image.CacheOption = BitmapCacheOption.OnLoad;
-                image.UriSource = null;
-                image.StreamSource = mem;
-                image.EndInit();
+            try {
+                if (imageData == null || imageData.Length == 0) return null;
+                
+                using (var mem = new MemoryStream(imageData))
+                {
+                    mem.Position = 0;
+                    image.BeginInit();
+                    image.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
+                    image.CacheOption = BitmapCacheOption.OnLoad;
+                    image.UriSource = null;
+                    image.StreamSource = mem;
+                    image.EndInit();
+                }
+                image.Freeze();
             }
-            image.Freeze();
+            catch (Exception ex)
+            {
+                MessageBox.Show("链接失败,请重新打开程序!");
+                GC.Collect();
+                Environment.Exit(0);
+                return null;
+            }
             return image;
         }
 
@@ -179,7 +190,6 @@ namespace ExamTextServer
             {
                 this.Dispatcher.BeginInvoke(new Action(() => {
                     this.Title = "湘西州专业技术人员公需科目考试作答系统V1.0 [正在连接考试服务器....]";
-                    btn_start.IsEnabled = false;
                 }));
             }
         }
@@ -191,7 +201,7 @@ namespace ExamTextServer
         }
         void ActionTime()
         {
-            DateTime fiveM = DateTime.Parse(string.Format("00:{0}:59", (SumTime - 1)));
+            DateTime fiveM = DateTime.Parse("01:00:01");
             bool IsBreak = false;
             while (true)
             {
@@ -200,7 +210,7 @@ namespace ExamTextServer
                     fiveM = fiveM.AddSeconds(-1);
                     ks_time.Text = string.Format("{0}分{1}秒", fiveM.Minute.ToString("00"), fiveM.Second.ToString("00"));
                     WriteQuse((sbyte)fiveM.Minute,(sbyte)fiveM.Second);
-                    if (ks_time.Text == "00分00秒")
+                    if (fiveM.Hour ==0 && fiveM.Minute==0 && fiveM.Second ==0)
                     {
                         IsBreak = true;
                     }
@@ -226,21 +236,21 @@ namespace ExamTextServer
             btn_idx.Dispatcher.BeginInvoke(new Action(() =>
             {
                 sbyte i = 0;
+                btn_idx.Children.Clear();
                 foreach (var item in list)
                 {
                     Button xx = new Button() { Style = btn_style, Width = 26, Height = 26, Tag=string.Format("{0},{1}", item.id,i),Content = (i + 1).ToString(), Background = new SolidColorBrush(Iintcolor), Margin = new Thickness(6, 6, 10, 0) };
                     btn_idx.Children.Add(xx);
                     i++;
                 }
-                btn_start.Visibility = Visibility.Collapsed;
-                time_paner.Visibility = Visibility.Visible;
-                btn_dwom.Visibility = Visibility.Visible;
-                btn_up.Visibility = Visibility.Visible;
+                btn_idx.IsEnabled = false;
+                btn_dwom.IsEnabled = false;
+                btn_up.IsEnabled = false;
                 CurQueIdx = 0;//设置默认当前试题索引
-                Post_ActionTime(ActionTime);//启动考试结束时间
-                btn_start.IsEnabled = true;
-                btn_save.Visibility = Visibility.Visible;
-                this.Title = "湘西州专业技术人员公需科目考试作答系统V1.0 [已获取试题信息请认真作答]";
+                this.Title = "湘西州专业技术人员公需科目考试作答系统V1.0 [试题信息已获取]";
+                btn_start.Visibility = Visibility.Visible;
+                q_list.IsEnabled = false;
+                WriteQuse(60,00);//写入试题信息
                 SetQustion(list[0], 0, (sbyte)list.Count);
             }));
         }
@@ -257,6 +267,7 @@ namespace ExamTextServer
             q_title.Inlines.Add(string.Format("{0}、", (idx+1)));
             string lx = item.qtype == 1?"单选题" :(item.qtype == 2?"多选题":"判断题");
             q_title.Inlines.Add(new Run(string.Format("({0}) ", lx)) { Foreground = new SolidColorBrush(color), FontWeight = FontWeights.Bold });
+            item.qcontent = item.qcontent.Replace("&nbsp;"," ").Replace("<br>","\r\n");
             q_title.Inlines.Add(item.qcontent);
             q_list.Children.Clear();//清除原有集合
             sbyte i = 0;
@@ -265,7 +276,7 @@ namespace ExamTextServer
                 QuestionItem qq = new QuestionItem() { Margin = new Thickness(0,20,0,0) };
                 qq.Q_ID = item.id;
                 qq.Q_idx = qidx_arr[i];
-                qq.Q_title = qitem.anwser;
+                qq.Q_title = qitem.anwser.Replace("&nbsp;"," ");
                 qq.Q_isCheack = qitem.anright;
                 qq.On_dlg_Cheacked += Qq_On_dlg_Cheacked;
                 q_list.Children.Add(qq);
@@ -274,6 +285,7 @@ namespace ExamTextServer
             if (idx == 0)
             {
                 btn_up.Visibility = Visibility.Collapsed;
+                btn_dwom.Visibility = Visibility.Visible;
             }
             else if (idx > 0 && idx<(ct-1))
             { btn_up.Visibility = Visibility.Visible;
@@ -282,9 +294,11 @@ namespace ExamTextServer
             else if (idx == (ct-1))
             {
                 btn_dwom.Visibility = Visibility.Collapsed;
+                btn_up.Visibility = Visibility.Visible;
             }
             else if(idx<(ct-1)) {
                 btn_dwom.Visibility = Visibility.Visible;
+                btn_up.Visibility = Visibility.Collapsed;
             }
 
         }
@@ -303,7 +317,6 @@ namespace ExamTextServer
         {
             Button btn = e.OriginalSource as Button;
             string[] ids = btn.Tag.ToString().Split(',');
-            //GetScore(QuseList[CurQueIdx]);//先计算当前得分
             CurQueIdx = sbyte.Parse(ids[1]);//索引赋值
             SetQustion(QuseList[CurQueIdx], CurQueIdx, (sbyte)QuseList.Count);//对应试题跳转
             click_ct = 0;//点击清零
@@ -315,9 +328,15 @@ namespace ExamTextServer
         /// <param name="e"></param>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            this.Title = "湘西州专业技术人员公需科目考试作答系统V1.0 [正在获取试题信息....]";
-            ExTCP.SendMsg("{\"model_type\":4,\"data\":\"ask\"}");
-            btn_start.IsEnabled = false;
+            Post_ActionTime(ActionTime);//启动考试结束时间
+            btn_start.Visibility = Visibility.Collapsed;
+            time_paner.Visibility = Visibility.Visible;
+            btn_dwom.Visibility = Visibility.Visible;
+            btn_up.Visibility = Visibility.Visible;
+            q_list.IsEnabled = true;
+            btn_idx.IsEnabled = true;
+            btn_dwom.IsEnabled = true;
+            btn_up.IsEnabled = true;
         }
 
       
@@ -347,6 +366,7 @@ namespace ExamTextServer
             SetQustion(QuseList[CurQueIdx], CurQueIdx, (sbyte)QuseList.Count);
             click_ct = 0;
         }
+
         
         /// <summary>
         /// 计算得分
@@ -355,44 +375,41 @@ namespace ExamTextServer
         bool GetScore(question_list item)
         {
             TempScorelist.Clear();
-            foreach (var c in q_list.Children)
-            {
-                qc = (QuestionItem)c;
-                TempScorelist.Add(new Qlist() { anwser = qc.Q_title, anright = qc.Q_isCheack });
-            }
             sbyte idx = 0;
-            sbyte right_idx = 0;
             sbyte right_ct = 0;
+            var xx = q_list.Children;
+            foreach (QuestionItem qcItem in q_list.Children)
+            {
+                TempScorelist.Add(new Qlist() { anwser = qcItem.Q_title, anright = qcItem.Q_isCheack, ckTime = qcItem.ckTime });
+            }
+            //单选题，判断题 必须单个选中
+            if ( item.qtype == 1 || item.qtype == 3 )
+            {
+                var list = TempScorelist.FindAll(s => s.anright == true);
+                list = list.OrderByDescending(s => s.ckTime).ToList();
+                for (int i = 1; i < list.Count; i++)
+                {
+                    list[i].anright = false;
+                    foreach (QuestionItem qcItem in q_list.Children)
+                    {
+                        if (list[i].ckTime == qcItem.ckTime)
+                        {
+                            qcItem.Q_isCheack = false;
+                            break;
+                        }
+                    }
+                }
+            }
             foreach (var qt in item.qlist)
             {
                 qt.anright = TempScorelist[idx].anright;
-                if (qt.anright)
-                {
-                    right_idx = idx;
-                }
-                if (qt.isright.ToLower()=="true" && TempScorelist[idx].anright.ToString().ToLower()=="true")
+                if (qt.isright.ToLower() == "true" && TempScorelist[idx].anright.ToString().ToLower() == "true")
                 {
                     right_ct++;
                 }
                 idx++;
             }
-            if(item.qtype==1&& click_ct>1)
-            {
-                item.qlist[right_idx].anright = false;
-                for (sbyte i = 0; i<q_list.Children.Count; i++)
-                {
-                    if (i!= right_idx)
-                    {
-                        qc = (QuestionItem)q_list.Children[i];
-                        qc.Q_isCheack = false;
-                    }
-                }
-            }
-            //if ( item.qtype == 2 && right_ct < 2 )
-            //{
-            //    MessageBox.Show(" \"多选题\" 至少作答2个选项!");
-            //    return false;
-            //}
+            
             //无论单选或者多选必须全部答对才计分
             if ( (idx>0&&right_ct>0) && (idx ==right_ct) )
             {
@@ -417,17 +434,6 @@ namespace ExamTextServer
             MessageBox.Show("家里了");
             this.IsEnabled = false;
         }
-        private void btn_save_Click(object sender, RoutedEventArgs e)
-        {
-            //if (GetScore(QuseList[CurQueIdx]))//先计算分数
-            //{
-                SetBtnsColor(CurQueIdx);//启用试题Button按钮
-                if (CurQueIdx < (QuseList.Count - 1))
-                {
-                    CurQueIdx++;
-                    SetQustion(QuseList[CurQueIdx], CurQueIdx, (sbyte)QuseList.Count);
-                }
-            //}
-        }
+        
     }
 }

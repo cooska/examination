@@ -38,6 +38,7 @@ namespace ExamTextServer
         delegate void dlg_ActionWork();
         NetworkStream networkStream = null;
         StringBuilder sb = new StringBuilder();
+        Thread threadHeart = null;
         void PostActionWork(dlg_ActionWork hd)
         {
             hd.BeginInvoke(CallBackActionWork, hd);
@@ -99,7 +100,7 @@ namespace ExamTextServer
                 Connect();
             }
             //增开线程维护消息收发
-            Thread threadHeart = new Thread(new ThreadStart(ActionWork));
+            threadHeart = new Thread(new ThreadStart(ActionWork));
             threadHeart.IsBackground = true;
             threadHeart.Start();
         }
@@ -216,45 +217,51 @@ namespace ExamTextServer
         {
             while (true)
             {
-                Thread.Sleep(3000);
                 SendMsg("0000");
+                Thread.Sleep(3000);
             }
         }
-        static object xxxx = new object();
+        static object lck_Send = new object();
         /// <summary>
         /// 发送消息到服务器的方法，带发送长度
         /// </summary>
         /// <param name="msg">消息内容</param>
         public void SendMsg(string msgs)
         {
-            try
+            lock (lck_Send)
             {
-                msgs = string.Format("@@@{0}###", msgs);
-                byte[] msg = Encoding.BigEndianUnicode.GetBytes(msgs);
-                //然后将字节数组写入网络流
-                if (bw != null && tcpClient.Connected == true)
+                try
                 {
-                    bw.Write(msg);
-                    bw.Flush();
-                    if (msgs == "0000")//心跳写单独的文件
+                    msgs = string.Format("@@@{0}###", msgs);
+                    byte[] msg = Encoding.BigEndianUnicode.GetBytes(msgs);
+                    //然后将字节数组写入网络流
+                    if (bw != null && tcpClient.Connected == true)
                     {
-                        WriteErr(Environment.NewLine + "成功发送数据：" + msgs);
+                        bw.Write(msg);
+                        bw.Flush();
+                        if (msgs == "0000")//心跳写单独的文件
+                        {
+                            WriteErr(Environment.NewLine + "成功发送数据：" + msgs);
+                        }
+                        else
+                        {
+                            WriteErr(Environment.NewLine + "成功发送数据：" + msgs);
+                        }
                     }
                     else
                     {
-                        WriteErr(Environment.NewLine + "成功发送数据：" + msgs);
+                        threadHeart.Abort();
+                        tcpClient.Close();//关闭连接在重新连
+                        this.Reconnect();
                     }
                 }
-                else
+                catch (Exception ex)
                 {
-                    //this.Reconnect();
+                    threadHeart.Abort();
+                    tcpClient.Close();//关闭连接在重新连
+                    this.Reconnect();
+                    WriteErr("发送消息到服务器出错：" + Environment.NewLine + "SendMsg" + ex.ToString());
                 }
-            }
-            catch (Exception ex)
-            {
-                tcpClient.Close();//关闭连接在重新连
-                //this.Reconnect();
-                WriteErr("发送消息到服务器出错：" + Environment.NewLine + "SendMsg" + ex.ToString());
             }
         }
     }

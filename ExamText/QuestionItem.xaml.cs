@@ -63,11 +63,14 @@ namespace ExamTextServer
         }
         public static readonly DependencyProperty C_Q_isCheackProperty =
        DependencyProperty.Register("Q_isCheack", typeof(bool), typeof(QuestionItem), new PropertyMetadata(null));
+        
+        public int ckTime { get; set;}
 
         private void q_ck_Click(object sender, RoutedEventArgs e)
         {
             if ( On_dlg_Cheacked != null )
             {
+                ckTime = int.Parse(string.Format("{0}{1}{2}",DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second));
                 On_dlg_Cheacked(Q_ID);
             }
         }
