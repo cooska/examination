@@ -129,13 +129,13 @@ namespace ExamTextServer
             }
             else//设置考试信息
             {
-                //if (ExTCP.HasQuseFile)
-                //{
-
-                //}
-                //else {
-                   AddQuesBtn(Info.question_list);
-                //}
+                //如果考生记录存在直接导入
+                if (ExTCP.HasQuseFile)
+                {
+                    Info.question_list.Clear();
+                    Info.question_list = ExTCP.GET_ques_list.question_list;
+                }
+                AddQuesBtn(Info.question_list);
             }
         }
         /// <summary>
@@ -235,19 +235,27 @@ namespace ExamTextServer
         /// </summary>
         void WriteQuse(sbyte fz,sbyte mz)
         {
-           root rt = new root() { fz = fz,mz = mz, model_type= 2, score = 0, question_list = QuseList };
+           root rt = new root() { fz = fz,mz = mz, model_type= 2,question_list = QuseList };
            ExTCP.WriteQuse(rt);
         }
         void AddQuesBtn(List<question_list> list)
         {
             QuseList = list;
+            SolidColorBrush cor = null;
             btn_idx.Dispatcher.BeginInvoke(new Action(() =>
             {
                 sbyte i = 0;
                 btn_idx.Children.Clear();
                 foreach (var item in list)
                 {
-                    Button xx = new Button() { Style = btn_style, Width = 26, Height = 26, Tag=string.Format("{0},{1}", item.id,i),Content = (i + 1).ToString(), Background = new SolidColorBrush(Iintcolor), Margin = new Thickness(6, 6, 10, 0) };
+                    if (item.qlist.Find(s => s.anright == true) == null)
+                    {
+                        cor = new SolidColorBrush(Iintcolor);
+                    }
+                    else {
+                        cor = new SolidColorBrush(color);
+                    }
+                    Button xx = new Button() { Style = btn_style, Width = 26, Height = 26, Tag=string.Format("{0},{1}", item.id,i),Content = (i + 1).ToString(), Background = cor, Margin = new Thickness(6, 6, 10, 0) };
                     btn_idx.Children.Add(xx);
                     i++;
                 }
@@ -297,7 +305,6 @@ namespace ExamTextServer
                 {
                     btn_dwom.Visibility = Visibility.Visible;
                 }
-               
             }
             else if (idx > 0 && idx<(ct-1))
             { btn_up.Visibility = Visibility.Visible;
@@ -322,6 +329,9 @@ namespace ExamTextServer
             if (GetScore(QuseList[CurQueIdx]))
             {
                 SetBtnsColor(CurQueIdx);//启用已作答试题Button按钮
+            }
+            else {
+                SetBtnsColor(CurQueIdx,0);//恢复未作答Button按钮
             }
         }
 
@@ -350,20 +360,24 @@ namespace ExamTextServer
             btn_start.Visibility = Visibility.Collapsed;
             time_paner.Visibility = Visibility.Visible;
             btn_dwom.Visibility = Visibility.Visible;
-
-          
         }
 
       
-        void SetBtnsColor(sbyte idx)
+        void SetBtnsColor(sbyte idx,sbyte type=1)
         {
             for (int i = 0; i < btn_idx.Children.Count; i++)
             {
                 if (i==idx)
                 {
                     Button item = btn_idx.Children[i] as Button;
-                   // var xx = item.Background;
-                    item.Background = new SolidColorBrush(color);
+                    // var xx = item.Background;
+                    if (type == 1)
+                    {
+                        item.Background = new SolidColorBrush(color);
+                    }
+                    else {
+                        item.Background = new SolidColorBrush(Iintcolor);
+                    }
                     break;
                 }
             }
@@ -445,8 +459,7 @@ namespace ExamTextServer
                 {
                     item.score = 1;
                 }
-                else {
-                   
+                else { 
                     item.score = 0;
                 }
 
@@ -483,9 +496,11 @@ namespace ExamTextServer
                     }
                 }
             }
-
-       
             IsNewChoseList = false;//加载后不是新题了
+            if (TempScorelist.Find(s => s.anright == true)==null)
+            {
+                return false;
+            }
             return true;
         }
     

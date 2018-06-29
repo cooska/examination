@@ -180,11 +180,12 @@ namespace ExamTextServer
             {
                 rt.user_info = null;
                 string msg = JsonConvert.SerializeObject(rt);
-                msg = DESEncrypt.Encrypt(msg);
-                FileStream fs = new FileStream(QPath, FileMode.OpenOrCreate, FileAccess.ReadWrite); //可以指定盘符，也可以指定任意文件名，还可以为word等文件
-                StreamWriter sw = new StreamWriter(fs); // 创建写入流
-                sw.WriteLine(msg);
+                //msg = DESEncrypt.BinkEncrypt(msg);
+                FileStream fs = new FileStream(QPath, FileMode.OpenOrCreate,FileAccess.Write); //可以指定盘符，也可以指定任意文件名，还可以为word等文件
+                StreamWriter sw = new StreamWriter(fs,Encoding.UTF8); // 创建写入流
+                sw.Write(msg);
                 sw.Close();
+                fs.Close();
             }
         }
         /// <summary>
@@ -204,12 +205,29 @@ namespace ExamTextServer
                 return File.Exists(QPath);
             }
         }
+        public root GET_ques_list
+        {
+            get {
+                lock (LckQ)
+                {
+                    root rst = new root();
+                    FileStream fs = new FileStream(QPath, FileMode.Open, FileAccess.Read); //可以指定盘符，也可以指定任意文件名，还可以为word等文件
+                    StreamReader sw = new StreamReader(fs, Encoding.UTF8); // 创建写入流
+                    string msg = sw.ReadToEnd();
+                    sw.Close();
+                    fs.Close();
+                    //msg = DESEncrypt.BinkDecrypt(msg);
+                    rst = JsonConvert.DeserializeObject<root>(msg);
+                    return rst;
+                }
+            }
+        }
         /// <summary>
         /// 重连
         /// </summary>
         public void Reconnect()
         {
-            Connect();
+          //  Connect();
         }
 
         /// <summary>
