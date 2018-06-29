@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Web;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -188,8 +189,15 @@ namespace ExamTextServer
         {
             if (!YesOrNo)
             {
-                this.Dispatcher.BeginInvoke(new Action(() => {
+                this.Dispatcher.BeginInvoke(new Action(() =>
+                {
                     this.Title = "湘西州专业技术人员公需科目考试作答系统V1.0 [正在连接考试服务器....]";
+                }));
+            }
+            else {
+                this.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    this.Title = "湘西州专业技术人员公需科目考试作答系统V1.0 [正在获取考生信息...]";
                 }));
             }
         }
@@ -266,7 +274,7 @@ namespace ExamTextServer
             q_title.Inlines.Add(string.Format("{0}、", (idx+1)));
             string lx = item.qtype == 1?"单选题" :(item.qtype == 2?"多选题":"判断题");
             q_title.Inlines.Add(new Run(string.Format("({0}) ", lx)) { Foreground = new SolidColorBrush(color), FontWeight = FontWeights.Bold });
-            item.qcontent = item.qcontent.Replace("&nbsp;"," ").Replace("<br>","\r\n");
+            item.qcontent = HttpUtility.HtmlDecode(item.qcontent);//.Replace("&nbsp;"," ").Replace("<br>","\r\n");
             q_title.Inlines.Add(item.qcontent);
             q_list.Children.Clear();//清除原有集合
             sbyte i = 0;
@@ -277,6 +285,7 @@ namespace ExamTextServer
                 qq.Q_idx = qidx_arr[i];
                 qq.Q_title = qitem.anwser.Replace("&nbsp;"," ");
                 qq.Q_isCheack = qitem.anright;
+                qq.ckTime = qitem.ckTime;
                 qq.On_dlg_Cheacked += Qq_On_dlg_Cheacked;
                 q_list.Children.Add(qq);
                 i++;
@@ -390,6 +399,8 @@ namespace ExamTextServer
             var xx = q_list.Children;
             foreach (QuestionItem qcItem in q_list.Children)
             {
+                item.qlist[idx].anright = qcItem.Q_isCheack;
+                item.qlist[idx].ckTime = qcItem.ckTime;
                 if (IsNewChoseList)
                 {
                     TempScorelist.Add(new Qlist() { anwser = qcItem.Q_title, anright = qcItem.Q_isCheack, ckTime = qcItem.ckTime });
@@ -407,13 +418,16 @@ namespace ExamTextServer
                 for (int i = 1; i < list.Count; i++)
                 {
                     list[i].anright = false;
+                    idx = 0;
                     foreach (QuestionItem qcItem in q_list.Children)
                     {
                         if (list[i].ckTime == qcItem.ckTime)
                         {
                             qcItem.Q_isCheack = false;
+                            item.qlist[idx].anright = false;
                             break;
                         }
+                        idx++;
                     }
                 }
             }
@@ -427,7 +441,7 @@ namespace ExamTextServer
                 {
                     item.score = 0;
                 }
-                else if (bool.Parse(qitem.isright) == tqitem.anright)//如果答对记1分
+                else if (qitem.anwser == tqitem.anwser)//如果答对记1分
                 {
                     item.score = 1;
                 }
@@ -454,9 +468,8 @@ namespace ExamTextServer
                     sbyte dx = 0;
                     foreach (var tt_item in qitem)
                     {
-                        if (bool.Parse(tt_item.isright) == tqitem[idx].anright)//如果答对记1分
+                        if (tt_item.anwser == tqitem[idx].anwser)//如果答对记1分
                         {
-                            tt_item.anright = true;
                             dx++;
                         }
                         idx++;

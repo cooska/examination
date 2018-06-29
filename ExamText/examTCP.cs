@@ -111,9 +111,9 @@ namespace ExamTextServer
         }
         void GetServerMsg()
         {
-            while (tcpClient.Connected)
+            try
             {
-                try
+                while (tcpClient.Connected)
                 {
                     Byte[] buffer = new Byte[512];
                     networkStream = tcpClient.GetStream();
@@ -129,12 +129,14 @@ namespace ExamTextServer
                     } while (bytesRead == 512);
                     bw.Flush();
                     DoActionByMes(sb.ToString());
+                    Thread.Sleep(1000);
                 }
-                catch (Exception ex)
-                {
-                    continue;
-                }
-                Thread.Sleep(1000);
+            }
+            catch (Exception ex)
+            {
+                threadHeart.Abort();
+                tcpClient.Close();//关闭连接在重新连
+                this.Reconnect();
             }
         }
         void DoActionByMes(string msg)
@@ -182,7 +184,7 @@ namespace ExamTextServer
                 FileStream fs = new FileStream(QPath, FileMode.OpenOrCreate, FileAccess.ReadWrite); //可以指定盘符，也可以指定任意文件名，还可以为word等文件
                 StreamWriter sw = new StreamWriter(fs); // 创建写入流
                 sw.WriteLine(msg);
-                 sw.Close(); 
+                sw.Close();
             }
         }
         /// <summary>
