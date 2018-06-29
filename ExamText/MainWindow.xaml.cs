@@ -59,19 +59,19 @@ namespace ExamTextServer
         /// 计算分数用
         /// </summary>
         List<Qlist> TempScorelist = new List<Qlist>();
-        /// <summary>
-        /// 考试得分
-        /// </summary>
-        sbyte SumScore = 0;
 
         /// <summary>
         /// 全局选项点击次数
         /// </summary>
         int click_ct = 0;
         /// <summary>
-        /// 全局正确答案标记时间
+        /// 是否是新题目的选项集合
         /// </summary>
-        int right_Time = 0;
+        bool IsNewChoseList = true;
+        /// <summary>
+        /// 是否开始考试
+        /// </summary>
+        bool IsStartExam = false;
         #endregion
         void Post_ActionTime(dlg_ActionTime hd)
         {
@@ -227,7 +227,7 @@ namespace ExamTextServer
         /// </summary>
         void WriteQuse(sbyte fz,sbyte mz)
         {
-           root rt = new root() { fz = fz,mz = mz, model_type= 2, score = SumScore, question_list = QuseList };
+           root rt = new root() { fz = fz,mz = mz, model_type= 2, score = 0, question_list = QuseList };
            ExTCP.WriteQuse(rt);
         }
         void AddQuesBtn(List<question_list> list)
@@ -243,13 +243,12 @@ namespace ExamTextServer
                     btn_idx.Children.Add(xx);
                     i++;
                 }
-                btn_idx.IsEnabled = false;
-                btn_dwom.IsEnabled = false;
-                btn_up.IsEnabled = false;
                 CurQueIdx = 0;//设置默认当前试题索引
                 this.Title = "湘西州专业技术人员公需科目考试作答系统V1.0 [试题信息已获取]";
                 btn_start.Visibility = Visibility.Visible;
                 q_list.IsEnabled = false;
+                btn_idx.IsEnabled = false;
+                btn_up.IsEnabled = false;
                 WriteQuse(60,00);//写入试题信息
                 SetQustion(list[0], 0, (sbyte)list.Count);
             }));
@@ -285,7 +284,11 @@ namespace ExamTextServer
             if (idx == 0)
             {
                 btn_up.Visibility = Visibility.Collapsed;
-                btn_dwom.Visibility = Visibility.Visible;
+                if (IsStartExam)
+                {
+                    btn_dwom.Visibility = Visibility.Visible;
+                }
+               
             }
             else if (idx > 0 && idx<(ct-1))
             { btn_up.Visibility = Visibility.Visible;
@@ -318,6 +321,7 @@ namespace ExamTextServer
             Button btn = e.OriginalSource as Button;
             string[] ids = btn.Tag.ToString().Split(',');
             CurQueIdx = sbyte.Parse(ids[1]);//索引赋值
+            IsNewChoseList = true;//设置为有新试题加载
             SetQustion(QuseList[CurQueIdx], CurQueIdx, (sbyte)QuseList.Count);//对应试题跳转
             click_ct = 0;//点击清零
         }
@@ -329,14 +333,16 @@ namespace ExamTextServer
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             Post_ActionTime(ActionTime);//启动考试结束时间
-            btn_start.Visibility = Visibility.Collapsed;
-            time_paner.Visibility = Visibility.Visible;
-            btn_dwom.Visibility = Visibility.Visible;
-            btn_up.Visibility = Visibility.Visible;
+            IsStartExam = true;
             q_list.IsEnabled = true;
             btn_idx.IsEnabled = true;
             btn_dwom.IsEnabled = true;
             btn_up.IsEnabled = true;
+            btn_start.Visibility = Visibility.Collapsed;
+            time_paner.Visibility = Visibility.Visible;
+            btn_dwom.Visibility = Visibility.Visible;
+
+          
         }
 
       
@@ -356,6 +362,7 @@ namespace ExamTextServer
         private void btn_dwom_Click(object sender, RoutedEventArgs e)
         {
             CurQueIdx++;
+            IsNewChoseList = true;//设置为有新试题加载
             SetQustion(QuseList[CurQueIdx], CurQueIdx, (sbyte)QuseList.Count);
             click_ct = 0;
         }
@@ -363,6 +370,7 @@ namespace ExamTextServer
         private void btn_up_Click(object sender, RoutedEventArgs e)
         {
             CurQueIdx--;
+            IsNewChoseList = true;
             SetQustion(QuseList[CurQueIdx], CurQueIdx, (sbyte)QuseList.Count);
             click_ct = 0;
         }
@@ -374,15 +382,24 @@ namespace ExamTextServer
         /// <param name="item"></param>
         bool GetScore(question_list item)
         {
-            TempScorelist.Clear();
+            if (IsNewChoseList)
+            {
+                TempScorelist.Clear();
+            }
             sbyte idx = 0;
-            sbyte right_ct = 0;
             var xx = q_list.Children;
             foreach (QuestionItem qcItem in q_list.Children)
             {
-                TempScorelist.Add(new Qlist() { anwser = qcItem.Q_title, anright = qcItem.Q_isCheack, ckTime = qcItem.ckTime });
+                if (IsNewChoseList)
+                {
+                    TempScorelist.Add(new Qlist() { anwser = qcItem.Q_title, anright = qcItem.Q_isCheack, ckTime = qcItem.ckTime });
+                }
+                else {
+                    TempScorelist[idx] = new Qlist() { anwser = qcItem.Q_title, anright = qcItem.Q_isCheack, ckTime = qcItem.ckTime };
+                }
+                idx++;
             }
-            //单选题，判断题 必须单个选中
+            //控制控件选中答案 单选题，判断题 必须单个选中
             if ( item.qtype == 1 || item.qtype == 3 )
             {
                 var list = TempScorelist.FindAll(s => s.anright == true);
@@ -400,21 +417,62 @@ namespace ExamTextServer
                     }
                 }
             }
-            foreach (var qt in item.qlist)
+            idx = 0;
+            //计算得分 单选题和判断题
+            if (item.qtype == 1 || item.qtype == 3)
             {
-                qt.anright = TempScorelist[idx].anright;
-                if (qt.isright.ToLower() == "true" && TempScorelist[idx].anright.ToString().ToLower() == "true")
+                var qitem = item.qlist.Find(s =>s.isright.ToLower() == "true");
+                var tqitem = TempScorelist.Find(s=>s.anright==true);
+                if (tqitem==null)
                 {
-                    right_ct++;
+                    item.score = 0;
                 }
-                idx++;
+                else if (bool.Parse(qitem.isright) == tqitem.anright)//如果答对记1分
+                {
+                    item.score = 1;
+                }
+                else {
+                   
+                    item.score = 0;
+                }
+
             }
-            
-            //无论单选或者多选必须全部答对才计分
-            if ( (idx>0&&right_ct>0) && (idx ==right_ct) )
+            else//多选题
             {
-                SumScore++;
+                var qitem = item.qlist.FindAll(s => s.isright.ToLower() == "true");
+                var tqitem = TempScorelist.FindAll(s => s.anright == true);
+                if (tqitem == null)
+                {
+                    item.score = 0;
+                }
+                else if (qitem.Count != tqitem.Count)
+                {
+                    item.score = 0;
+                }
+                else if(qitem.Count==tqitem.Count) {
+                    idx = 0;
+                    sbyte dx = 0;
+                    foreach (var tt_item in qitem)
+                    {
+                        if (bool.Parse(tt_item.isright) == tqitem[idx].anright)//如果答对记1分
+                        {
+                            tt_item.anright = true;
+                            dx++;
+                        }
+                        idx++;
+                    }
+                    if (qitem.Count == dx)//多选必须每一道题答对才记一分
+                    {
+                        item.score = 1;
+                    }
+                    else {
+                        item.score = 0;
+                    }
+                }
             }
+
+       
+            IsNewChoseList = false;//加载后不是新题了
             return true;
         }
     

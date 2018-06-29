@@ -70,7 +70,7 @@ namespace ExamTextServer
         {
             if ( On_dlg_Cheacked != null )
             {
-                ckTime = int.Parse(string.Format("{0}{1}{2}",DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second));
+                ckTime = int.Parse(string.Format("{0}{1}{2}{3}",DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second,DateTime.Now.Millisecond));
                 On_dlg_Cheacked(Q_ID);
             }
         }

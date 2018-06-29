@@ -38,7 +38,7 @@ namespace ExamTextServer
         public userinfo user_info { get; set; }
         public List<question_list> question_list { get; set; }
         /// <summary>
-        /// 考试分数
+        /// 考试总分数
         /// </summary>
         public sbyte score { get; set; }
     }
@@ -111,5 +111,9 @@ namespace ExamTextServer
         /// Kng_id
         /// </summary>
         public int kng_id { get; set; }
+        /// <summary>
+        /// 单个试题得分
+        /// </summary>
+        public sbyte score { get; set; }
     }
 }
