@@ -180,12 +180,15 @@ namespace ExamTextServer
             {
                 rt.user_info = null;
                 string msg = JsonConvert.SerializeObject(rt);
+                msg = DESEncrypt.Encrypt(msg);
+                File.WriteAllText(QPath,msg);
+
                 //msg = DESEncrypt.BinkEncrypt(msg);
-                FileStream fs = new FileStream(QPath, FileMode.OpenOrCreate,FileAccess.Write); //可以指定盘符，也可以指定任意文件名，还可以为word等文件
-                StreamWriter sw = new StreamWriter(fs,Encoding.UTF8); // 创建写入流
-                sw.Write(msg);
-                sw.Close();
-                fs.Close();
+                //FileStream fs = new FileStream(QPath, FileMode.OpenOrCreate,FileAccess.Write); //可以指定盘符，也可以指定任意文件名，还可以为word等文件
+                //StreamWriter sw = new StreamWriter(fs,Encoding.UTF8); // 创建写入流
+                //sw.Write(msg);
+                //sw.Close();
+                //fs.Close();
             }
         }
         /// <summary>
@@ -211,11 +214,13 @@ namespace ExamTextServer
                 lock (LckQ)
                 {
                     root rst = new root();
-                    FileStream fs = new FileStream(QPath, FileMode.Open, FileAccess.Read); //可以指定盘符，也可以指定任意文件名，还可以为word等文件
-                    StreamReader sw = new StreamReader(fs, Encoding.UTF8); // 创建写入流
-                    string msg = sw.ReadToEnd();
-                    sw.Close();
-                    fs.Close();
+                    string msg = File.ReadAllText(QPath);
+                    msg = DESEncrypt.Decrypt(msg);
+                    //FileStream fs = new FileStream(QPath, FileMode.Open, FileAccess.Read); //可以指定盘符，也可以指定任意文件名，还可以为word等文件
+                    //StreamReader sw = new StreamReader(fs, Encoding.UTF8); // 创建写入流
+                    //string msg = sw.ReadToEnd();
+                    //sw.Close();
+                    //fs.Close();
                     //msg = DESEncrypt.BinkDecrypt(msg);
                     rst = JsonConvert.DeserializeObject<root>(msg);
                     return rst;
@@ -227,7 +232,7 @@ namespace ExamTextServer
         /// </summary>
         public void Reconnect()
         {
-          //  Connect();
+            Connect();
         }
 
         /// <summary>
