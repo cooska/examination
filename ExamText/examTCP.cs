@@ -28,26 +28,25 @@ namespace ExamTextServer
 {
     public class examTCP
     {
-
+        #region 变量定义
         public delegate void dlg_isConToServer(bool YesOrNo);
         public event dlg_isConToServer On_isConToServer;
         public delegate void dlg_isGetUserInfo(root userinfo);
         public event dlg_isGetUserInfo On_isGetUserInfo;
+        public delegate void dlg_ReConServer();
+        public event dlg_ReConServer On_ReConServer;
         string Path = AppDomain.CurrentDomain.BaseDirectory + "Err.txt";
         string QPath = AppDomain.CurrentDomain.BaseDirectory + "cfg.txt";
         delegate void dlg_ActionWork();
         NetworkStream networkStream = null;
         StringBuilder sb = new StringBuilder();
-        Thread threadHeart = null;
-        void PostActionWork(dlg_ActionWork hd)
-        {
-            hd.BeginInvoke(CallBackActionWork, hd);
-        }
-        void CallBackActionWork(IAsyncResult ast)
-        {
-            dlg_ActionWork hd = (dlg_ActionWork)ast.AsyncState;
-            hd.EndInvoke(ast);
-        }
+        Thread[] threadHeart = new Thread[2];
+        /// <summary>
+        /// 是否开始作答
+        /// </summary>
+        public bool isAnwser = false;
+        #endregion
+ 
         // tcp通信对象
         private TcpClient tcpClient;
         // tcp通信中读取数据的对象
@@ -88,6 +87,8 @@ namespace ExamTextServer
                 {
                     On_isConToServer(true);
                 }
+                ActionWork();
+                
             }
             catch (Exception ex)
             {
@@ -95,19 +96,28 @@ namespace ExamTextServer
                 {
                     On_isConToServer(false);
                 }
-                //WriteErr("连接服务器出错：" + Environment.NewLine + "Connect" + ex.ToString());
                 Thread.Sleep(1000);
-                Connect();
+                Reconnect();
             }
-            //增开线程维护消息收发
-            threadHeart = new Thread(new ThreadStart(ActionWork));
-            threadHeart.IsBackground = true;
-            threadHeart.Start();
         }
         void ActionWork()
         {
-            PostActionWork(GetServerMsg);//收
-            PostActionWork(SendHeart);//心跳发送
+            for (int i = 0; i < threadHeart.Length; i++)
+            {
+                switch (i)
+                {
+                    case 0:
+                        //获取消息
+                        threadHeart[i] = new Thread(new ThreadStart(GetServerMsg));
+                        break;
+                    case 1:
+                        //发送消息
+                        threadHeart[i] = new Thread(new ThreadStart(SendHeart));
+                        break;
+                }
+                threadHeart[i].IsBackground = true;
+                threadHeart[i].Start();
+            }
         }
         void GetServerMsg()
         {
@@ -134,10 +144,10 @@ namespace ExamTextServer
             }
             catch (Exception ex)
             {
-                threadHeart.Abort();
-                tcpClient.Close();//关闭连接在重新连
-                this.Reconnect();
+                Reconnect();
+                return;
             }
+
         }
         void DoActionByMes(string msg)
         {
@@ -163,10 +173,11 @@ namespace ExamTextServer
             }
             lock (Lck)
             {
-                StreamWriter sw = new StreamWriter(Path, true, Encoding.UTF8);
-                sw.WriteLine(msg);
-                sw.Close();
-                sw.Dispose();
+               FileStream fs = new FileStream(QPath, FileMode.Append, FileAccess.Write); //可以指定盘符，也可以指定任意文件名，还可以为word等文件
+               StreamWriter sw = new StreamWriter(fs,Encoding.UTF8); // 创建写入流
+               sw.WriteLine(msg);
+               sw.Close();
+               fs.Close();
             }
         }
         static object LckQ = new object();
@@ -181,7 +192,7 @@ namespace ExamTextServer
                 rt.user_info = null;
                 string msg = JsonConvert.SerializeObject(rt);
                 msg = DESEncrypt.Encrypt(msg);
-                File.WriteAllText(QPath,msg);
+                File.WriteAllText(QPath, msg);
 
                 //msg = DESEncrypt.BinkEncrypt(msg);
                 //FileStream fs = new FileStream(QPath, FileMode.OpenOrCreate,FileAccess.Write); //可以指定盘符，也可以指定任意文件名，还可以为word等文件
@@ -210,7 +221,8 @@ namespace ExamTextServer
         }
         public root GET_ques_list
         {
-            get {
+            get
+            {
                 lock (LckQ)
                 {
                     root rst = new root();
@@ -232,7 +244,32 @@ namespace ExamTextServer
         /// </summary>
         public void Reconnect()
         {
-            Connect();
+            //如果线程处于开启状态关掉
+            foreach (var item in threadHeart)
+            {
+                if (item != null && item.ThreadState == ThreadState.Running)
+                {
+                    item.Abort();
+                }
+            }
+            if (tcpClient != null)
+            {
+                tcpClient.Close();//关闭连接在重新连
+            }
+            //如果用户没有作答则可一种后台重连
+            if (!isAnwser)
+            {
+                Connect();
+            }
+            else
+            {
+                //如果已作答则通知界面重连
+                if (On_ReConServer != null)
+                {
+                    On_ReConServer();
+                }
+            }
+
         }
 
         /// <summary>
@@ -240,11 +277,11 @@ namespace ExamTextServer
         /// </summary>
         private void SendHeart()
         {
-            while (true)
-            {
-                SendMsg("0000");
-                Thread.Sleep(3000);
-            }
+           while (true)
+           {
+               SendMsg("0000");
+               Thread.Sleep(3000);
+           }
         }
         static object lck_Send = new object();
         /// <summary>
@@ -260,30 +297,19 @@ namespace ExamTextServer
                     msgs = string.Format("@@@{0}###", msgs);
                     byte[] msg = Encoding.BigEndianUnicode.GetBytes(msgs);
                     //然后将字节数组写入网络流
-                    if (bw != null && tcpClient.Connected == true)
+                    bw.Write(msg);
+                    bw.Flush();
+                    if (msgs == "0000")//心跳写单独的文件
                     {
-                        bw.Write(msg);
-                        bw.Flush();
-                        if (msgs == "0000")//心跳写单独的文件
-                        {
-                            WriteErr(Environment.NewLine + "成功发送数据：" + msgs);
-                        }
-                        else
-                        {
-                            WriteErr(Environment.NewLine + "成功发送数据：" + msgs);
-                        }
+                        WriteErr(Environment.NewLine + "成功发送数据：" + msgs);
                     }
                     else
                     {
-                        threadHeart.Abort();
-                        tcpClient.Close();//关闭连接在重新连
-                        this.Reconnect();
+                        WriteErr(Environment.NewLine + "成功发送数据：" + msgs);
                     }
                 }
                 catch (Exception ex)
                 {
-                    threadHeart.Abort();
-                    tcpClient.Close();//关闭连接在重新连
                     this.Reconnect();
                     WriteErr("发送消息到服务器出错：" + Environment.NewLine + "SendMsg" + ex.ToString());
                 }

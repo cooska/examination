@@ -46,12 +46,12 @@ namespace ExamTextServer
         /// 当前试题按钮颜色
         /// </summary>
         Color Curt_color = (Color)ColorConverter.ConvertFromString("#00FFFF");
-	
+
         /// <summary>
         /// 按钮初始化背景颜色
         /// </summary>
         Color Iintcolor = (Color)ColorConverter.ConvertFromString("#e0e0e0");
-        
+
         /// <summary>
         /// 按钮样式
         /// </summary>
@@ -87,6 +87,10 @@ namespace ExamTextServer
         /// 考试时间
         /// </summary>
         DateTime ExamTime;
+        /// <summary>
+        /// 是否重新连接服务器
+        /// </summary>
+        bool IsReConServer = false;
         #endregion
         void Post_ActionTime(dlg_ActionTime hd)
         {
@@ -96,7 +100,12 @@ namespace ExamTextServer
         {
             dlg_ActionTime hd = (dlg_ActionTime)ars.AsyncState;
             hd.EndInvoke(ars);
-            SubMit();
+            //不是重新连接服务器状态提交试卷
+            if (!IsReConServer)
+            {
+                SubMit();
+            }
+           
         }
         void Post_IintData(dlg_ActionTime hd)
         {
@@ -115,35 +124,52 @@ namespace ExamTextServer
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            IsReConServer = false;//默认不要重连
             Post_IintData(ConServer);
             btn_style = (Style)this.FindResource("BtnIcon");
         }
         void ConServer()
         {
             string[] ips = GetCfg.Split(':');
-            ExTCP = new examTCP(ips[0],int.Parse(ips[1]));
+            ExTCP = new examTCP(ips[0], int.Parse(ips[1]));
             ExTCP.On_isConToServer += ExTCP_On_isConToServer;
             ExTCP.On_isGetUserInfo += ExTCP_On_isGetUserInfo;
+            ExTCP.On_ReConServer += ExTCP_On_ReConServer;
             ExTCP.Connect();
         }
+        /// <summary>
+        /// 作答中与服务器断开连节再连接的处理
+        /// </summary>
+        private void ExTCP_On_ReConServer()
+        {
+            //先设置为要重连状态
+            IsReConServer = true;
+            //在跳出计时
+            IsBreak = true;
+            MessageBox.Show("与服务器连节断开,请监考老师重新打开程序,继续作答!");
+            ResStartApp();//重新打开程序
+        }
+
         string GetCfg
         {
-            get {
+            get
+            {
                 var item = ConfigurationManager.AppSettings["ip"];
                 return item;
             }
         }
         private void ExTCP_On_isGetUserInfo(root Info)
         {
-            if (Info.user_info != null)//用户信息不等于设置用户信息
+            if (Info.user_info != null)//用户信息不等于空就设置用户信息
             {
                 SetUserInfo(Info.user_info);
-                //如果本地文件不存在在问服务器获取考试试题
+                //如果本地文件不存在则问服务器获取考试试题
                 if (!ExTCP.HasQuseFile)
                 {
-                    ExTCP.SendMsg("{\"model_type\":4,\"data\":\"ask\"}");
+                  ExTCP.SendMsg("{\"model_type\":4,\"data\":\"ask\"}");
                 }
-                else {//如果存在就直接加载已保存试题信息
+                else
+                {//如果本地考试文件存在就直接加载已保存试题信息
                     Info.question_list = new List<question_list>();
                     Info.question_list = ExTCP.GET_ques_list.question_list;
                     fz = ExTCP.GET_ques_list.fz;
@@ -164,47 +190,53 @@ namespace ExamTextServer
         /// <param name="userinfo"></param>
         void SetUserInfo(userinfo userinfo)
         {
-            this.Dispatcher.BeginInvoke(new Action(() => {
-                byte[] arr = Convert.FromBase64String(userinfo.user_head_img);
-                ks_img.Source = LoadImage(arr);
-                ks_name.Text = userinfo.user_name;
-                ks_xb.Text = userinfo.user_sex;
-                ks_sfz.Text = userinfo.user_card;
-                ks_dw.Text = userinfo.user_work_str;
-                ks_sd.Text = userinfo.user_place_str;
-                ks_zkzh.Text = userinfo.exam_card;
-                ks_zwh.Text = userinfo.exam_card.Substring(userinfo.exam_card.Length-2,2);
-                if (!String.IsNullOrEmpty(userinfo.start_time))
+            try
+            {
+                this.Dispatcher.BeginInvoke(new Action(() =>
                 {
-                    ExamTime = DateTime.Parse("2018-06-30 16:40:00");//DateTime.Parse(userinfo.start_time);
-                }
-                this.Title = "湘西州专业技术人员公需科目考试作答系统V1.0 [正在获取试题信息...]";
-            }));
+                    byte[] arr = Convert.FromBase64String(userinfo.user_head_img);
+                    ks_img.Source = LoadImage(arr);
+                    ks_name.Text = userinfo.user_name;
+                    ks_xb.Text = userinfo.user_sex;
+                    ks_sfz.Text = userinfo.user_card;
+                    ks_dw.Text = userinfo.user_work_str;
+                    ks_sd.Text = userinfo.user_place_str;
+                    ks_zkzh.Text = userinfo.exam_card;
+                    ks_zwh.Text = userinfo.exam_card.Substring(userinfo.exam_card.Length - 2, 2);
+                    if (!String.IsNullOrEmpty(userinfo.start_time))
+                    {
+                        ExamTime = DateTime.Parse(userinfo.start_time);//DateTime.Parse("2018-07-01 16:30:00");
+                    }
+                    this.Title = "湘西州专业技术人员公需科目考试作答系统V1.0 [正在获取试题信息...]";
+                }));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("考试信息获取失败,请监考老师重新打开程序获取考生信息!");
+                ResStartApp();
+            }
+
+        }
+        void ResStartApp()
+        {
+            GC.Collect();
+            Environment.Exit(0);
         }
         public BitmapImage LoadImage(byte[] imageData)
         {
             var image = new BitmapImage();
-            try {
-                if (imageData == null || imageData.Length == 0) return null;
-                using (var mem = new MemoryStream(imageData))
-                {
-                    mem.Position = 0;
-                    image.BeginInit();
-                    image.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
-                    image.CacheOption = BitmapCacheOption.OnLoad;
-                    image.UriSource = null;
-                    image.StreamSource = mem;
-                    image.EndInit();
-                }
-                image.Freeze();
-            }
-            catch (Exception ex)
+            if (imageData == null || imageData.Length == 0) return null;
+            using (var mem = new MemoryStream(imageData))
             {
-                MessageBox.Show("链接失败,请重新打开程序!");
-                GC.Collect();
-                Environment.Exit(0);
-                return null;
+                mem.Position = 0;
+                image.BeginInit();
+                image.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
+                image.CacheOption = BitmapCacheOption.OnLoad;
+                image.UriSource = null;
+                image.StreamSource = mem;
+                image.EndInit();
             }
+            image.Freeze();
             return image;
         }
 
@@ -217,28 +249,29 @@ namespace ExamTextServer
                     this.Title = "湘西州专业技术人员公需科目考试作答系统V1.0 [正在连接考试服务器....]";
                 }));
             }
-            else {
+            else
+            {
                 this.Dispatcher.BeginInvoke(new Action(() =>
                 {
-                    this.Title = "湘西州专业技术人员公需科目考试作答系统V1.0 [正在获取考生信息...]";
+                    this.Title = "湘西州专业技术人员公需科目考试作答系统V1.0 [已连接服务器,正获取考生信息...]";
                 }));
             }
         }
 
         string SplitTime(double fz)
         {
-            var t = new TimeSpan(0, 0, 0,(int)fz);
+            var t = new TimeSpan(0, 0, 0, (int)fz);
             return string.Format("{0:00}:{1:00}:{2:00}", t.Hours, t.Minutes, t.Seconds);
         }
         void ActionTime()
         {
             DateTime fiveM = DateTime.Parse("01:00:01");
             var rstTime = ExamTime.Subtract(DateTime.Now);
-            if (rstTime.TotalMinutes<0)
+            if (rstTime.TotalMinutes < 0&& rstTime.TotalMinutes>-SumTime)
             {
                 int Minute = (int)DateTime.Now.Subtract(ExamTime).TotalMinutes;
-                Minute = fz==0?(SumTime - Minute):fz;//计算剩余时间
-                int Second = mz==0?DateTime.Now.Second:mz;//计算剩余秒钟
+                Minute = fz == 0 ? (SumTime - Minute) : fz;//计算剩余时间
+                int Second = mz == 0 ? DateTime.Now.Second : mz;//计算剩余秒钟
                 fiveM = DateTime.Parse(string.Format("00:{0}:{1}", Minute, Second));
             }
             while (true)
@@ -252,7 +285,7 @@ namespace ExamTextServer
                     {
                         WriteQuse((sbyte)fiveM.Minute, (sbyte)fiveM.Second);
                     }
-                    if (fiveM.Hour ==0 && fiveM.Minute==0 && fiveM.Second ==0)
+                    if (fiveM.Hour == 0 && fiveM.Minute == 0 && fiveM.Second == 0)
                     {
                         IsBreak = true;
                     }
@@ -267,10 +300,10 @@ namespace ExamTextServer
         /// <summary>
         /// 写入考试信息
         /// </summary>
-        void WriteQuse(sbyte fz,sbyte mz)
+        void WriteQuse(sbyte fz, sbyte mz)
         {
-           root rt = new root() { fz = fz,mz = mz, model_type= 2,question_list = QuseList };
-           ExTCP.WriteQuse(rt);
+            root rt = new root() { fz = fz, mz = mz, model_type = 2, question_list = QuseList };
+            ExTCP.WriteQuse(rt);
         }
         void AddQuesBtn(List<question_list> list)
         {
@@ -287,10 +320,11 @@ namespace ExamTextServer
                     {
                         cor = new SolidColorBrush(Iintcolor);
                     }
-                    else {
+                    else
+                    {
                         cor = new SolidColorBrush(color);
                     }
-                    Button xx = new Button() { Style = btn_style, Width = 26, Height = 26, Tag=string.Format("{0},{1}", item.id,i),Content = (i + 1).ToString(), Background = cor, Margin = new Thickness(6, 6, 10, 0) };
+                    Button xx = new Button() { Style = btn_style, Width = 26, Height = 26, Tag = string.Format("{0},{1}", item.id, i), Content = (i + 1).ToString(), Background = cor, Margin = new Thickness(6, 6, 10, 0) };
                     btn_idx.Children.Add(xx);
                     i++;
                 }
@@ -311,23 +345,23 @@ namespace ExamTextServer
         /// <param name="item">题目集合</param>
         /// <param name="idx">题目索引</param>
         /// <param name="ct">题目总数</param>
-        void SetQustion(question_list item,sbyte idx,sbyte ct)
+        void SetQustion(question_list item, sbyte idx, sbyte ct)
         {
             q_title.Text = "";
-            q_title.Inlines.Add(string.Format("{0}、", (idx+1)));
-            string lx = item.qtype == 1?"单选题" :(item.qtype == 2?"多选题":"判断题");
+            q_title.Inlines.Add(string.Format("{0}、", (idx + 1)));
+            string lx = item.qtype == 1 ? "单选题" : (item.qtype == 2 ? "多选题" : "判断题");
             q_title.Inlines.Add(new Run(string.Format("({0}) ", lx)) { Foreground = new SolidColorBrush(color), FontWeight = FontWeights.Bold });
-            item.qcontent = HttpUtility.HtmlDecode(item.qcontent).Replace("??","\t")
-            .Replace("?(","(").Replace(")?",")").Replace("(?","(").Replace("?)",")");//  item.qcontent.Replace("&nbsp;"," ").Replace("<br>","\r\n");
+            item.qcontent = HttpUtility.HtmlDecode(item.qcontent).Replace("??", "\t")
+            .Replace("?(", "(").Replace(")?", ")").Replace("(?", "(").Replace("?)", ")");//  item.qcontent.Replace("&nbsp;"," ").Replace("<br>","\r\n");
             q_title.Inlines.Add(item.qcontent);
             q_list.Children.Clear();//清除原有集合
             sbyte i = 0;
             foreach (var qitem in item.qlist)
             {
-                QuestionItem qq = new QuestionItem() { Margin = new Thickness(0,20,0,0) };
+                QuestionItem qq = new QuestionItem() { Margin = new Thickness(0, 20, 0, 0) };
                 qq.Q_ID = item.id;
                 qq.Q_idx = qidx_arr[i];
-                qq.Q_title = qitem.anwser.Replace("&nbsp;"," ");
+                qq.Q_title = qitem.anwser.Replace("&nbsp;", " ");
                 qq.Q_isCheack = qitem.anright;
                 qq.ckTime = qitem.ckTime;
                 qq.On_dlg_Cheacked += Qq_On_dlg_Cheacked;
@@ -342,16 +376,18 @@ namespace ExamTextServer
                     btn_dwom.Visibility = Visibility.Visible;
                 }
             }
-            else if (idx > 0 && idx<(ct-1))
-            { btn_up.Visibility = Visibility.Visible;
+            else if (idx > 0 && idx < (ct - 1))
+            {
+                btn_up.Visibility = Visibility.Visible;
                 btn_dwom.Visibility = Visibility.Visible;
             }
-            else if (idx == (ct-1))
+            else if (idx == (ct - 1))
             {
                 btn_dwom.Visibility = Visibility.Collapsed;
                 btn_up.Visibility = Visibility.Visible;
             }
-            else if(idx<(ct-1)) {
+            else if (idx < (ct - 1))
+            {
                 btn_dwom.Visibility = Visibility.Visible;
                 btn_up.Visibility = Visibility.Collapsed;
             }
@@ -366,8 +402,9 @@ namespace ExamTextServer
             {
                 SetBtnsColor(CurQueIdx);//启用已作答试题Button按钮
             }
-            else {
-                SetBtnsColor(CurQueIdx,0);//恢复未作答Button按钮
+            else
+            {
+                SetBtnsColor(CurQueIdx, 0);//恢复未作答Button按钮
             }
         }
 
@@ -395,15 +432,16 @@ namespace ExamTextServer
             btn_start.Visibility = Visibility.Collapsed;
             time_paner.Visibility = Visibility.Visible;
             btn_dwom.Visibility = Visibility.Visible;
+            ExTCP.isAnwser = true;//设置为开始作答状态
             Post_ActionTime(ActionTime);//启动考试结束时间
         }
 
-      
-        void SetBtnsColor(sbyte idx,sbyte type=1)
+
+        void SetBtnsColor(sbyte idx, sbyte type = 1)
         {
             for (int i = 0; i < btn_idx.Children.Count; i++)
             {
-                if (i==idx)
+                if (i == idx)
                 {
                     Button item = btn_idx.Children[i] as Button;
                     // var xx = item.Background;
@@ -411,7 +449,8 @@ namespace ExamTextServer
                     {
                         item.Background = new SolidColorBrush(color);
                     }
-                    else {
+                    else
+                    {
                         item.Background = new SolidColorBrush(Iintcolor);
                     }
                     break;
@@ -434,7 +473,7 @@ namespace ExamTextServer
             click_ct = 0;
         }
 
-        
+
         /// <summary>
         /// 计算得分
         /// </summary>
@@ -455,13 +494,14 @@ namespace ExamTextServer
                 {
                     TempScorelist.Add(new Qlist() { anwser = qcItem.Q_title, anright = qcItem.Q_isCheack, ckTime = qcItem.ckTime });
                 }
-                else {
+                else
+                {
                     TempScorelist[idx] = new Qlist() { anwser = qcItem.Q_title, anright = qcItem.Q_isCheack, ckTime = qcItem.ckTime };
                 }
                 idx++;
             }
             //控制控件选中答案 单选题，判断题 必须单个选中
-            if ( item.qtype == 1 || item.qtype == 3 )
+            if (item.qtype == 1 || item.qtype == 3)
             {
                 var list = TempScorelist.FindAll(s => s.anright == true);
                 list = list.OrderByDescending(s => s.ckTime).ToList();
@@ -485,9 +525,9 @@ namespace ExamTextServer
             //计算得分 单选题和判断题
             if (item.qtype == 1 || item.qtype == 3)
             {
-                var qitem = item.qlist.Find(s =>s.isright.ToLower() == "true");
-                var tqitem = TempScorelist.Find(s=>s.anright==true);
-                if (tqitem==null)
+                var qitem = item.qlist.Find(s => s.isright.ToLower() == "true");
+                var tqitem = TempScorelist.Find(s => s.anright == true);
+                if (tqitem == null)
                 {
                     item.score = 0;
                 }
@@ -495,7 +535,8 @@ namespace ExamTextServer
                 {
                     item.score = 1;
                 }
-                else { 
+                else
+                {
                     item.score = 0;
                 }
 
@@ -512,7 +553,8 @@ namespace ExamTextServer
                 {
                     item.score = 0;
                 }
-                else if(qitem.Count==tqitem.Count) {
+                else if (qitem.Count == tqitem.Count)
+                {
                     idx = 0;
                     sbyte dx = 0;
                     foreach (var tt_item in qitem)
@@ -527,22 +569,23 @@ namespace ExamTextServer
                     {
                         item.score = 1;
                     }
-                    else {
+                    else
+                    {
                         item.score = 0;
                     }
                 }
             }
             IsNewChoseList = false;//加载后不是新题了
-            if (TempScorelist.Find(s => s.anright == true)==null)
+            if (TempScorelist.Find(s => s.anright == true) == null)
             {
                 return false;
             }
             return true;
         }
-    
+
         private void btn_submit_Click(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show("已经认真检查好,确定交卷！","操作提示!", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            if (MessageBox.Show("已经认真检查好,确定交卷！", "操作提示!", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
                 //跳出倒计时 自动提交考试成绩
                 IsBreak = true;
@@ -556,12 +599,13 @@ namespace ExamTextServer
             ExTCP.DeQuseFile();
             sbyte SumNum = (sbyte)QuseList.FindAll(s => s.score == 1).Count;
             //提交得分
-            ExTCP.SendMsg("{\"model_type\":3,\"score\":\"" + SumNum+"\"}");
-            
-            this.Dispatcher.BeginInvoke(new Action(()=> {
+            ExTCP.SendMsg("{\"model_type\":3,\"score\":\"" + SumNum + "\"}");
+
+            this.Dispatcher.BeginInvoke(new Action(() =>
+            {
                 this.IsEnabled = false;
             }));
         }
-        
+
     }
 }
