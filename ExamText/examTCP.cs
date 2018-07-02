@@ -23,6 +23,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using System.Text.RegularExpressions;
 
 namespace ExamTextServer
 {
@@ -46,7 +47,7 @@ namespace ExamTextServer
         /// </summary>
         public bool isAnwser = false;
         #endregion
- 
+
         // tcp通信对象
         private TcpClient tcpClient;
         // tcp通信中读取数据的对象
@@ -81,6 +82,14 @@ namespace ExamTextServer
         {
             try
             {
+                //如果线程处于开启状态关掉
+                foreach (var item in threadHeart)
+                {
+                    if (item != null)
+                    {
+                        item.Abort();
+                    }
+                }
                 //实例对象
                 tcpClient = new TcpClient(IP, port);
                 if (On_isConToServer != null)
@@ -88,7 +97,7 @@ namespace ExamTextServer
                     On_isConToServer(true);
                 }
                 ActionWork();
-                
+
             }
             catch (Exception ex)
             {
@@ -117,6 +126,7 @@ namespace ExamTextServer
                 }
                 threadHeart[i].IsBackground = true;
                 threadHeart[i].Start();
+                Thread.Sleep(500);
             }
         }
         void GetServerMsg()
@@ -149,20 +159,34 @@ namespace ExamTextServer
             }
 
         }
+
         void DoActionByMes(string msg)
         {
-            if (msg.IndexOf("@@@") >= 0 && msg.LastIndexOf("###") != -1)
+            try
             {
-                msg = msg.Substring(3, (msg.Length - 6));
-                if (msg != "hello" && msg != "")
+                Regex rg = new Regex("@@@(.*?)###", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+                MatchCollection mcl = rg.Matches(msg);
+                foreach (Match item in mcl)
                 {
-                    var item = JsonConvert.DeserializeObject<root>(msg);
-                    if (On_isGetUserInfo != null)
+                    if (item.Value.IndexOf("@@@") >= 0 && item.Value.LastIndexOf("###") != -1)
                     {
-                        On_isGetUserInfo(item);
+                        string Newmsg = item.Value.Substring(3, (msg.Length - 6));
+                        if (Newmsg != "hello" && Newmsg != "")
+                        {
+                            var Jsonitem = JsonConvert.DeserializeObject<root>(Newmsg);
+                            if (On_isGetUserInfo != null)
+                            {
+                                On_isGetUserInfo(Jsonitem);
+                            }
+                        }
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                return;
+            }
+
         }
         static object Lck = new object();
         public void WriteErr(string msg)
@@ -173,11 +197,11 @@ namespace ExamTextServer
             }
             lock (Lck)
             {
-               FileStream fs = new FileStream(QPath, FileMode.Append, FileAccess.Write); //可以指定盘符，也可以指定任意文件名，还可以为word等文件
-               StreamWriter sw = new StreamWriter(fs,Encoding.UTF8); // 创建写入流
-               sw.WriteLine(msg);
-               sw.Close();
-               fs.Close();
+                FileStream fs = new FileStream(Path, FileMode.Append, FileAccess.Write); //可以指定盘符，也可以指定任意文件名，还可以为word等文件
+                StreamWriter sw = new StreamWriter(fs, Encoding.UTF8); // 创建写入流
+                sw.WriteLine(msg);
+                sw.Close();
+                fs.Close();
             }
         }
         static object LckQ = new object();
@@ -244,18 +268,12 @@ namespace ExamTextServer
         /// </summary>
         public void Reconnect()
         {
-            //如果线程处于开启状态关掉
-            foreach (var item in threadHeart)
-            {
-                if (item != null && item.ThreadState == ThreadState.Running)
-                {
-                    item.Abort();
-                }
-            }
             if (tcpClient != null)
             {
                 tcpClient.Close();//关闭连接在重新连
             }
+            //等待3秒后重连
+            Thread.Sleep(2000);
             //如果用户没有作答则可一种后台重连
             if (!isAnwser)
             {
@@ -269,7 +287,6 @@ namespace ExamTextServer
                     On_ReConServer();
                 }
             }
-
         }
 
         /// <summary>
@@ -277,11 +294,11 @@ namespace ExamTextServer
         /// </summary>
         private void SendHeart()
         {
-           while (true)
-           {
-               SendMsg("0000");
-               Thread.Sleep(3000);
-           }
+            while (true)
+            {
+                SendMsg("0000");
+                Thread.Sleep(3000);
+            }
         }
         static object lck_Send = new object();
         /// <summary>

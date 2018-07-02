@@ -105,6 +105,12 @@ namespace ExamTextServer
             {
                 SubMit();
             }
+            //如果时间停止并且开始作答
+            if (ExTCP.isAnwser)
+            {
+                MessageBox.Show("与服务器连节断开,请监考老师重新打开程序,继续作答!");
+                ResStartApp();//重新打开程序
+            }
            
         }
         void Post_IintData(dlg_ActionTime hd)
@@ -205,7 +211,7 @@ namespace ExamTextServer
                     ks_zwh.Text = userinfo.exam_card.Substring(userinfo.exam_card.Length - 2, 2);
                     if (!String.IsNullOrEmpty(userinfo.start_time))
                     {
-                        ExamTime = DateTime.Parse(userinfo.start_time);//DateTime.Parse("2018-07-01 16:30:00");
+                        ExamTime = DateTime.Parse("2018-07-02 11:00:00"); //DateTime.Parse(userinfo.start_time);//
                     }
                     this.Title = "湘西州专业技术人员公需科目考试作答系统V1.0 [正在获取试题信息...]";
                 }));
@@ -596,14 +602,13 @@ namespace ExamTextServer
         /// </summary>
         void SubMit()
         {
+            ExTCP.isAnwser = false;//作答完毕
             ExTCP.DeQuseFile();
             sbyte SumNum = (sbyte)QuseList.FindAll(s => s.score == 1).Count;
             //提交得分
             ExTCP.SendMsg("{\"model_type\":3,\"score\":\"" + SumNum + "\"}");
-
-            this.Dispatcher.BeginInvoke(new Action(() =>
-            {
-                this.IsEnabled = false;
+            this.Dispatcher.BeginInvoke(new Action(() =>{
+            this.IsEnabled = false;
             }));
         }
 
