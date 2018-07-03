@@ -91,6 +91,10 @@ namespace ExamTextServer
         /// 是否重新连接服务器
         /// </summary>
         bool IsReConServer = false;
+        /// <summary>
+        /// 用户头像地址
+        /// </summary>
+        string user_path = AppDomain.CurrentDomain.BaseDirectory + "user.jpg";
         #endregion
         void Post_ActionTime(dlg_ActionTime hd)
         {
@@ -201,7 +205,8 @@ namespace ExamTextServer
                 this.Dispatcher.BeginInvoke(new Action(() =>
                 {
                     byte[] arr = Convert.FromBase64String(userinfo.user_head_img);
-                    ks_img.Source = LoadImage(arr);
+                    ks_img.Source = new BitmapImage(new Uri(Base64StringToImage(arr), UriKind.Absolute));//LoadImage(arr);
+             
                     ks_name.Text = userinfo.user_name;
                     ks_xb.Text = userinfo.user_sex;
                     ks_sfz.Text = userinfo.user_card;
@@ -211,7 +216,7 @@ namespace ExamTextServer
                     ks_zwh.Text = userinfo.exam_card.Substring(userinfo.exam_card.Length - 2, 2);
                     if (!String.IsNullOrEmpty(userinfo.start_time))
                     {
-                        ExamTime = DateTime.Parse("2018-07-02 11:00:00"); //DateTime.Parse(userinfo.start_time);//
+                        ExamTime = DateTime.Parse(userinfo.start_time);//DateTime.Parse("2018-07-02 11:00:00"); //
                     }
                     this.Title = "湘西州专业技术人员公需科目考试作答系统V1.0 [正在获取试题信息...]";
                 }));
@@ -244,6 +249,28 @@ namespace ExamTextServer
             }
             image.Freeze();
             return image;
+        }
+        private string Base64StringToImage(byte[] imgarr)
+        {
+            try
+            {
+                byte[] arr = imgarr;
+                MemoryStream ms = new MemoryStream(arr);
+                System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(ms);
+                bmp.Save(user_path, System.Drawing.Imaging.ImageFormat.Jpeg);
+                //bmp.Save(txtFileName + ".bmp", ImageFormat.Bmp);
+                //bmp.Save(txtFileName + ".gif", ImageFormat.Gif);
+                //bmp.Save(txtFileName + ".png", ImageFormat.Png);
+                ms.Close();
+                bmp.Dispose();
+                //MessageBox.Show("转换成功！");
+                return user_path;
+            }
+            catch (Exception ex)
+            {
+                //MessageBox.Show("Base64StringToImage 转换失败\nException：" + ex.Message);
+                return "";
+            }
         }
 
         private void ExTCP_On_isConToServer(bool YesOrNo)
