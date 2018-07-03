@@ -205,8 +205,7 @@ namespace ExamTextServer
                 this.Dispatcher.BeginInvoke(new Action(() =>
                 {
                     byte[] arr = Convert.FromBase64String(userinfo.user_head_img);
-                    ks_img.Source = new BitmapImage(new Uri(Base64StringToImage(arr), UriKind.Absolute));//LoadImage(arr);
-             
+                    ks_img.Source = LoadImage(arr); //new BitmapImage(new Uri(Base64StringToImage(arr), UriKind.Absolute));/
                     ks_name.Text = userinfo.user_name;
                     ks_xb.Text = userinfo.user_sex;
                     ks_sfz.Text = userinfo.user_card;
