@@ -634,7 +634,8 @@ namespace ExamTextServer
             //提交得分
             ExTCP.SendMsg("{\"model_type\":3,\"score\":\"" + SumNum + "\"}");
             this.Dispatcher.BeginInvoke(new Action(() =>{
-            this.IsEnabled = false;
+                MessageBox.Show("交卷成功，请考生离开考场！","考试结束");
+                this.IsEnabled = false;
             }));
         }
 
