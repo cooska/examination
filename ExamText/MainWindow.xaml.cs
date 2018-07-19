@@ -145,8 +145,17 @@ namespace ExamTextServer
             ExTCP.On_isConToServer += ExTCP_On_isConToServer;
             ExTCP.On_isGetUserInfo += ExTCP_On_isGetUserInfo;
             ExTCP.On_ReConServer += ExTCP_On_ReConServer;
+            ExTCP.On_isGetTitleInfo += ExTCP_On_isGetTitleInfo;
             ExTCP.Connect();
         }
+
+        private void ExTCP_On_isGetTitleInfo(string Title)
+        {
+            this.Dispatcher.BeginInvoke(new Action(()=> {
+                tbk_title.Text = Title.Split(':')[1];
+            }));
+        }
+
         /// <summary>
         /// 作答中与服务器断开连节再连接的处理
         /// </summary>
@@ -218,6 +227,7 @@ namespace ExamTextServer
                         ExamTime = DateTime.Parse(userinfo.start_time);//DateTime.Parse("2018-07-02 11:00:00"); //
                     }
                     this.Title = "湘西州专业技术人员公需科目考试作答系统V1.0 [正在获取试题信息...]";
+                    tbk_tagMsg.Text = this.Title;
                 }));
             }
             catch (Exception ex)
@@ -279,6 +289,7 @@ namespace ExamTextServer
                 this.Dispatcher.BeginInvoke(new Action(() =>
                 {
                     this.Title = "湘西州专业技术人员公需科目考试作答系统V1.0 [正在连接考试服务器....]";
+                    tbk_tagMsg.Text = this.Title;
                 }));
             }
             else
@@ -286,6 +297,7 @@ namespace ExamTextServer
                 this.Dispatcher.BeginInvoke(new Action(() =>
                 {
                     this.Title = "湘西州专业技术人员公需科目考试作答系统V1.0 [已连接服务器,正获取考生信息...]";
+                    tbk_tagMsg.Text = this.Title;
                 }));
             }
         }
@@ -340,35 +352,40 @@ namespace ExamTextServer
         void AddQuesBtn(List<question_list> list)
         {
             QuseList = list;
-            SolidColorBrush cor = null;
-            btn_idx.Dispatcher.BeginInvoke(new Action(() =>
+            if (list!=null)
             {
-                sbyte i = 0;
-                btn_idx.Children.Clear();
-                foreach (var item in list)
+                SolidColorBrush cor = null;
+                btn_idx.Dispatcher.BeginInvoke(new Action(() =>
                 {
-                    //如果题目已作答启动作答后的颜色
-                    if (item.qlist.Find(s => s.anright == true) == null)
+                    sbyte i = 0;
+                    btn_idx.Children.Clear();
+                    foreach (var item in list)
                     {
-                        cor = new SolidColorBrush(Iintcolor);
+                        //如果题目已作答启动作答后的颜色
+                        if (item.qlist.Find(s => s.anright == true) == null)
+                        {
+                            cor = new SolidColorBrush(Iintcolor);
+                        }
+                        else
+                        {
+                            cor = new SolidColorBrush(color);
+                        }
+                        Button xx = new Button() { Style = btn_style, Width = 26, Height = 26, Tag = string.Format("{0},{1}", item.id, i), Content = (i + 1).ToString(), Background = cor, Margin = new Thickness(6, 6, 10, 0) };
+                        btn_idx.Children.Add(xx);
+                        i++;
                     }
-                    else
-                    {
-                        cor = new SolidColorBrush(color);
-                    }
-                    Button xx = new Button() { Style = btn_style, Width = 26, Height = 26, Tag = string.Format("{0},{1}", item.id, i), Content = (i + 1).ToString(), Background = cor, Margin = new Thickness(6, 6, 10, 0) };
-                    btn_idx.Children.Add(xx);
-                    i++;
-                }
-                CurQueIdx = 0;//设置默认当前试题索引
-                this.Title = "湘西州专业技术人员公需科目考试作答系统V1.0 [试题信息已获取]";
-                btn_start.Visibility = Visibility.Visible;
-                q_list.IsEnabled = false;
-                btn_idx.IsEnabled = false;
-                btn_up.IsEnabled = false;
-                //WriteQuse(60,00);//写入试题信息
-                SetQustion(list[0], 0, (sbyte)list.Count);
-            }));
+                    CurQueIdx = 0;//设置默认当前试题索引
+                    this.Title = "湘西州专业技术人员公需科目考试作答系统V1.0 [试题信息已获取]";
+                    tbk_tagMsg.Text = this.Title;
+                    btn_start.Visibility = Visibility.Visible;
+                    q_list.IsEnabled = false;
+                    btn_idx.IsEnabled = false;
+                    btn_up.IsEnabled = false;
+                    //WriteQuse(60,00);//写入试题信息
+                    SetQustion(list[0], 0, (sbyte)list.Count);
+                }));
+            }
+           
         }
         string[] qidx_arr = new string[] { "A、", "B、", "C、", "D、", "E、", "F、", "G、", "H、" };
         /// <summary>

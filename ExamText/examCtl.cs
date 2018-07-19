@@ -41,6 +41,7 @@ namespace ExamTextServer
         /// 考试总分数
         /// </summary>
         public sbyte score { get; set; }
+
     }
     public class userinfo
     {

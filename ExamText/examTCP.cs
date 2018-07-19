@@ -32,8 +32,10 @@ namespace ExamTextServer
         #region 变量定义
         public delegate void dlg_isConToServer(bool YesOrNo);
         public event dlg_isConToServer On_isConToServer;
-        public delegate void dlg_isGetUserInfo(root userinfo);
+        public delegate void dlg_isGetUserInfo(root userinfo); 
         public event dlg_isGetUserInfo On_isGetUserInfo;
+        public delegate void dlg_isGetTitleInfo(string Title);
+        public event dlg_isGetTitleInfo On_isGetTitleInfo;
         public delegate void dlg_ReConServer();
         public event dlg_ReConServer On_ReConServer;
         string Path = AppDomain.CurrentDomain.BaseDirectory + "Err.txt";
@@ -171,12 +173,19 @@ namespace ExamTextServer
                     if (item.Value.IndexOf("@@@") >= 0 && item.Value.LastIndexOf("###") != -1)
                     {
                         string Newmsg = item.Value.Substring(3, (msg.Length - 6));
-                        if (Newmsg != "hello" && Newmsg != "")
+                        if (Newmsg != "hello" && Newmsg != ""&& Newmsg.ToLower().IndexOf("title")==-1)
                         {
                             var Jsonitem = JsonConvert.DeserializeObject<root>(Newmsg);
                             if (On_isGetUserInfo != null)
                             {
                                 On_isGetUserInfo(Jsonitem);
+                            }
+                        }
+                        else if (Newmsg.ToLower().IndexOf("title")!=-1)
+                        {
+                            if (On_isGetTitleInfo!=null)
+                            {
+                                On_isGetTitleInfo(Newmsg);
                             }
                         }
                     }
