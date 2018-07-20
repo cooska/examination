@@ -134,6 +134,10 @@ namespace ExamTextServer
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            InitFun();
+        }
+        public void InitFun()
+        {
             IsReConServer = false;//默认不要重连
             Post_IintData(ConServer);
             btn_style = (Style)this.FindResource("BtnIcon");
@@ -655,6 +659,5 @@ namespace ExamTextServer
                 this.IsEnabled = false;
             }));
         }
-
     }
 }

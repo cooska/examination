@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2009
+VisualStudioVersion = 15.0.27004.2002
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "jsexam", "jsexam\jsexam.csproj", "{99952188-7D2D-4ECF-B8D3-E296492F82D8}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{30A289F0-2715-49C7-9C72-DD2CFA50CDE5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExamTextServer", "ExamText\ExamTextServer.csproj", "{7A2D84E6-E8A3-44F7-AE4A-E3EE310570A4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateClient", "UpdateClient\UpdateClient.csproj", "{3DA79A42-DE2C-4CA2-89DA-EEB29A82811A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{7A2D84E6-E8A3-44F7-AE4A-E3EE310570A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A2D84E6-E8A3-44F7-AE4A-E3EE310570A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A2D84E6-E8A3-44F7-AE4A-E3EE310570A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DA79A42-DE2C-4CA2-89DA-EEB29A82811A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DA79A42-DE2C-4CA2-89DA-EEB29A82811A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DA79A42-DE2C-4CA2-89DA-EEB29A82811A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DA79A42-DE2C-4CA2-89DA-EEB29A82811A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -12,5 +12,6 @@ namespace ExamText
     /// </summary>
     public partial class App : Application
     {
+
     }
 }

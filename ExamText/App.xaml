@@ -9,13 +9,9 @@
         <FontFamily x:Key="HeaderFontFamily">微软微黑,雅黑,Microsoft Yahei,Yahei,Segoe UI,Segoe UI Light</FontFamily>
         <FontFamily x:Key="TipFontFamily">微软微黑,雅黑,Microsoft Yahei,Yahei,宋体,Segoe UI,Segoe UI Light</FontFamily>
 
-
-
         <System:Double x:Key="HeaderSamllFontSize">16</System:Double>
         <System:Double x:Key="HeaderNormalFontSize">18</System:Double>
         <System:Double x:Key="HeaderLargeFontSize">24</System:Double>
-
-
         <System:Double x:Key="ContentSmallFontSize">12</System:Double>
         <System:Double x:Key="ContentNormalFontSize">13</System:Double>
         <System:Double x:Key="ContentLargeFontSize">14</System:Double>
