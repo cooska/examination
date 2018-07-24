@@ -1,0 +1,15 @@
+D:\jsexam\UpdateClient\bin\Release\UpdateClient.exe
+D:\jsexam\UpdateClient\bin\Release\UpdateClient.pdb
+D:\jsexam\UpdateClient\bin\Release\ICSharpCode.SharpZipLib.dll
+D:\jsexam\UpdateClient\obj\Release\UpdateClient.csprojResolveAssemblyReference.cache
+D:\jsexam\UpdateClient\obj\Release\UpDate.g.cs
+D:\jsexam\UpdateClient\obj\Release\App.g.cs
+D:\jsexam\UpdateClient\obj\Release\UpdateClient_MarkupCompile.cache
+D:\jsexam\UpdateClient\obj\Release\UpdateClient_MarkupCompile.lref
+D:\jsexam\UpdateClient\obj\Release\UpDate.baml
+D:\jsexam\UpdateClient\obj\Release\UpdateClient.g.resources
+D:\jsexam\UpdateClient\obj\Release\UpdateClient.Properties.Resources.resources
+D:\jsexam\UpdateClient\obj\Release\UpdateClient.csproj.GenerateResource.Cache
+D:\jsexam\UpdateClient\obj\Release\UpdateClient.csproj.CoreCompileInputs.cache
+D:\jsexam\UpdateClient\obj\Release\UpdateClient.exe
+D:\jsexam\UpdateClient\obj\Release\UpdateClient.pdb
