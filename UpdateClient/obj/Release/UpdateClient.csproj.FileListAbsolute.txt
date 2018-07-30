@@ -1,6 +1,7 @@
 D:\jsexam\UpdateClient\bin\Release\UpdateClient.exe
 D:\jsexam\UpdateClient\bin\Release\UpdateClient.pdb
 D:\jsexam\UpdateClient\bin\Release\ICSharpCode.SharpZipLib.dll
+D:\jsexam\UpdateClient\obj\Release\UpdateClient.csprojResolveAssemblyReference.cache
 D:\jsexam\UpdateClient\obj\Release\UpDate.g.cs
 D:\jsexam\UpdateClient\obj\Release\App.g.cs
 D:\jsexam\UpdateClient\obj\Release\UpdateClient_MarkupCompile.cache

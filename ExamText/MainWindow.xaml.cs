@@ -150,7 +150,7 @@ namespace ExamTextServer
             ExTCP.On_isGetUserInfo += ExTCP_On_isGetUserInfo;
             ExTCP.On_ReConServer += ExTCP_On_ReConServer;
             ExTCP.On_isGetTitleInfo += ExTCP_On_isGetTitleInfo;
-            ExTCP.On_NextExma += ExTCP_On_NextExma;
+            ExTCP.On_NextExma += ExTCP_On_NextExma; 
             ExTCP.Connect();
         }
 

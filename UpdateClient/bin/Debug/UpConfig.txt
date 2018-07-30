@@ -1,5 +1,5 @@
 [ver]
-value=1.0.3
+value=1.0.4
 [ck]
 value=http://coos45.gotoip11.com/update/version.txt
 [up]
