@@ -150,7 +150,21 @@ namespace ExamTextServer
             ExTCP.On_isGetUserInfo += ExTCP_On_isGetUserInfo;
             ExTCP.On_ReConServer += ExTCP_On_ReConServer;
             ExTCP.On_isGetTitleInfo += ExTCP_On_isGetTitleInfo;
+            ExTCP.On_NextExma += ExTCP_On_NextExma;
             ExTCP.Connect();
+        }
+
+        private void ExTCP_On_NextExma()
+        {
+            ExTCP.SendMsg("{\"model_type\":5,\"data\":\"next\"}");
+            ExTCP.DeQuseFile();
+            QuseList.Clear();
+            this.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                this.Title = "湘西州专业技术人员公需科目考试作答系统 [正在获取下一场考试信息...]";
+                tbk_tagMsg.Text = this.Title;
+                IsBreak = false;
+            }));
         }
 
         private void ExTCP_On_isGetTitleInfo(string Title)
@@ -191,7 +205,7 @@ namespace ExamTextServer
                 {
                   ExTCP.SendMsg("{\"model_type\":4,\"data\":\"ask\"}");
                 }
-                else
+                else 
                 {//如果本地考试文件存在就直接加载已保存试题信息
                     Info.question_list = new List<question_list>();
                     Info.question_list = ExTCP.GET_ques_list.question_list;
@@ -199,6 +213,11 @@ namespace ExamTextServer
                     mz = ExTCP.GET_ques_list.mz;
                     AddQuesBtn(Info.question_list);
                 }
+                //以下设置为可以开考
+                this.Dispatcher.BeginInvoke(new Action(()=> {
+                    this.IsEnabled = true;
+                    BackOrSetExamStat(false);
+                }));                
             }
             else//直接获取考试信息加载
             {
@@ -217,8 +236,11 @@ namespace ExamTextServer
             {
                 this.Dispatcher.BeginInvoke(new Action(() =>
                 {
-                    byte[] arr = Convert.FromBase64String(userinfo.user_head_img);
-                    ks_img.Source = LoadImage(arr); //new BitmapImage(new Uri(Base64StringToImage(arr), UriKind.Absolute));/
+                    if (userinfo.user_head_img!=null)
+                    {
+                        byte[] arr = Convert.FromBase64String(userinfo.user_head_img);
+                        ks_img.Source = LoadImage(arr); //new BitmapImage(new Uri(Base64StringToImage(arr), UriKind.Absolute));/
+                    }
                     ks_name.Text = userinfo.user_name;
                     ks_xb.Text = userinfo.user_sex;
                     ks_sfz.Text = userinfo.user_card;
@@ -230,7 +252,7 @@ namespace ExamTextServer
                     {
                         ExamTime = DateTime.Parse(userinfo.start_time);//DateTime.Parse("2018-07-02 11:00:00"); //
                     }
-                    this.Title = "湘西州专业技术人员公需科目考试作答系统V1.0 [正在获取试题信息...]";
+                    this.Title = "湘西州专业技术人员公需科目考试作答系统 [正在获取试题信息...]";
                     tbk_tagMsg.Text = this.Title;
                 }));
             }
@@ -292,7 +314,7 @@ namespace ExamTextServer
             {
                 this.Dispatcher.BeginInvoke(new Action(() =>
                 {
-                    this.Title = "湘西州专业技术人员公需科目考试作答系统V1.0 [正在连接考试服务器....]";
+                    this.Title = "湘西州专业技术人员公需科目考试作答系统 [正在连接考试服务器....]";
                     tbk_tagMsg.Text = this.Title;
                 }));
             }
@@ -300,7 +322,7 @@ namespace ExamTextServer
             {
                 this.Dispatcher.BeginInvoke(new Action(() =>
                 {
-                    this.Title = "湘西州专业技术人员公需科目考试作答系统V1.0 [已连接服务器,正获取考生信息...]";
+                    this.Title = "湘西州专业技术人员公需科目考试作答系统 [已连接服务器,正获取考生信息...]";
                     tbk_tagMsg.Text = this.Title;
                 }));
             }
@@ -379,7 +401,7 @@ namespace ExamTextServer
                         i++;
                     }
                     CurQueIdx = 0;//设置默认当前试题索引
-                    this.Title = "湘西州专业技术人员公需科目考试作答系统V1.0 [试题信息已获取]";
+                    this.Title = "湘西州专业技术人员公需科目考试作答系统 [试题信息已获取]";
                     tbk_tagMsg.Text = this.Title;
                     btn_start.Visibility = Visibility.Visible;
                     q_list.IsEnabled = false;
@@ -477,18 +499,25 @@ namespace ExamTextServer
         /// <param name="e"></param>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            IsStartExam = true;
-            q_list.IsEnabled = true;
-            btn_idx.IsEnabled = true;
-            btn_dwom.IsEnabled = true;
-            btn_up.IsEnabled = true;
-            btn_start.Visibility = Visibility.Collapsed;
-            time_paner.Visibility = Visibility.Visible;
-            btn_dwom.Visibility = Visibility.Visible;
-            ExTCP.isAnwser = true;//设置为开始作答状态
+            BackOrSetExamStat(true);
             Post_ActionTime(ActionTime);//启动考试结束时间
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="b">true开考，false 还原</param>
+        void BackOrSetExamStat(bool b)
+        {
+            IsStartExam = b;
+            q_list.IsEnabled = b;
+            btn_idx.IsEnabled = b;
+            btn_dwom.IsEnabled = b;
+            btn_up.IsEnabled = b;
+            btn_start.Visibility = b==true?Visibility.Collapsed: Visibility.Visible;
+            time_paner.Visibility = b==true?Visibility.Visible:Visibility.Collapsed;
+            btn_dwom.Visibility = b==true?Visibility.Visible: Visibility.Collapsed;
+            ExTCP.isAnwser = b;//设置为开始作答状态
+        }
 
         void SetBtnsColor(sbyte idx, sbyte type = 1)
         {

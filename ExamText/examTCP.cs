@@ -38,7 +38,10 @@ namespace ExamTextServer
         public event dlg_isGetTitleInfo On_isGetTitleInfo;
         public delegate void dlg_ReConServer();
         public event dlg_ReConServer On_ReConServer;
-        string Path = AppDomain.CurrentDomain.BaseDirectory + "Err.txt";
+        public delegate void dlg_NextExma();
+        public event dlg_ReConServer On_NextExma;
+        string ErrPath = AppDomain.CurrentDomain.BaseDirectory + "Err.txt";
+        string LogPath = AppDomain.CurrentDomain.BaseDirectory + "log.txt";
         string QPath = AppDomain.CurrentDomain.BaseDirectory + "cfg.txt";
         delegate void dlg_ActionWork();
         NetworkStream networkStream = null;
@@ -173,22 +176,36 @@ namespace ExamTextServer
                     if (item.Value.IndexOf("@@@") >= 0 && item.Value.LastIndexOf("###") != -1)
                     {
                         string Newmsg = item.Value.Substring(3, (msg.Length - 6));
-                        if (Newmsg != "hello" && Newmsg != ""&& Newmsg.ToLower().IndexOf("title")==-1)
+                        if (Newmsg != "hello" && Newmsg != "" && Newmsg.ToLower().IndexOf("_title_") == -1)
                         {
                             var Jsonitem = JsonConvert.DeserializeObject<root>(Newmsg);
+                            if (Jsonitem.model_type==5)
+                            {
+                                if (On_NextExma != null)
+                                {
+                                    On_NextExma();
+                                    return;
+                                }
+                            }
                             if (On_isGetUserInfo != null)
                             {
                                 On_isGetUserInfo(Jsonitem);
+                                if(Jsonitem.user_info!=null)
+                                {
+                                    //写日志
+                                    WriteLog(Newmsg);
+                                }
                             }
                         }
-                        else if (Newmsg.ToLower().IndexOf("title")!=-1)
+                        else if (Newmsg.ToLower().IndexOf("_title_") != -1)
                         {
-                            if (On_isGetTitleInfo!=null)
+                            if (On_isGetTitleInfo != null)
                             {
                                 On_isGetTitleInfo(Newmsg);
                             }
                         }
                     }
+
                 }
             }
             catch (Exception ex)
@@ -200,17 +217,16 @@ namespace ExamTextServer
         static object Lck = new object();
         public void WriteErr(string msg)
         {
-            if (!File.Exists(Path))
-            {
-                File.Create(Path);
-            }
             lock (Lck)
             {
-                FileStream fs = new FileStream(Path, FileMode.Append, FileAccess.Write); //可以指定盘符，也可以指定任意文件名，还可以为word等文件
-                StreamWriter sw = new StreamWriter(fs, Encoding.UTF8); // 创建写入流
-                sw.WriteLine(msg);
-                sw.Close();
-                fs.Close();
+                File.AppendAllText(ErrPath, msg);
+            }
+        }
+        public void WriteLog(string msg)
+        {
+            lock (Lck)
+            {
+                File.AppendAllText(LogPath, string.Format("[{0}]\r\n{1}", DateTime.Now.ToString(), msg));
             }
         }
         static object LckQ = new object();

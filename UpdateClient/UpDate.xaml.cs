@@ -28,6 +28,7 @@ namespace UpdateClient
         string AppPath = AppDomain.CurrentDomain.BaseDirectory;
         delegate void dlg_ActionWork();
         string TextCfg = "";
+        string cfg_str = "[ver]\r\nvalue={th}\r\n[ck]\r\nvalue=http://coos45.gotoip11.com/update/version.txt\r\n[up]\r\nvalue=http://coos45.gotoip11.com/update/upclient.zip";
         void AsyncActionWork(dlg_ActionWork hd)
         {
             hd.BeginInvoke(ActionCallBack, hd);
@@ -87,18 +88,20 @@ namespace UpdateClient
                 if (IsOk)
                 {
                     this.Dispatcher.BeginInvoke(new Action(()=> {
+                        //写入cfg
+                        File.WriteAllText(AppPath + "UpConfig.txt", cfg_str);
                         tbk_msg.Text = "文件更新完毕!";
                         btn_down.Content = "点击启动";
                     }) );
-
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show("下载失败请重试!");
             }
-
         }
+        
+      
         /// <summary>
         /// 解压文件
         /// </summary>
@@ -171,6 +174,7 @@ namespace UpdateClient
             wb.DownloadFile(CkUrl, SavePath);
             string msg = File.ReadAllText(SavePath);
             string Ver = GetVersionText("[Client]", msg);
+            cfg_str = cfg_str.Replace("{th}",Ver);
             string Cur_Ver = GetCurVer;
             //如果版本相同直接打开
             if (Ver == Cur_Ver)
