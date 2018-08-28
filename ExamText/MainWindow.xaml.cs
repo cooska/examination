@@ -335,7 +335,7 @@ namespace ExamTextServer
         }
         void ActionTime()
         {
-            DateTime fiveM = DateTime.Parse("01:00:01");
+            DateTime fiveM = DateTime.Parse("00:01:01"); //DateTime.Parse("01:00:01");
             var rstTime = ExamTime.Subtract(DateTime.Now);
             if (rstTime.TotalMinutes < 0&& rstTime.TotalMinutes>-SumTime)
             {

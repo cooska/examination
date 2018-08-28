@@ -122,6 +122,7 @@
         var pg = GetQueryString("page");
         var mid = GetQueryString("mid");
         var kngid = GetQueryString("kng_id");
+        var dtct = GetQueryString("dtct");
         if (tp != null && tp != "" && tp != "0") {
             $("#ipt_tx").val(tp);
         }
@@ -135,6 +136,9 @@
         }
         if (kngid != null && kngid != "" && kngid != "-1") {
             $("#kng_id").val(kngid);
+        }
+        if (dtct != null && dtct != "") {
+            $("#dtct").val(dtct);
         }
     //if (pg!=null&&pg!=""&&pg!="0")
     //{

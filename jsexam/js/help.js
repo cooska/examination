@@ -780,7 +780,11 @@ function setResultSearch() {
     quse_year = (quse_year == "-1" ? "" : "&start_date=" + quse_year + "");
     var user_card = $('#quse_sfz').val();
     user_card = (user_card == "" ? "" : "&user_card=" + user_card + "");
-    var url = "Results.aspx?cx=yes" + module_id + work_id + quse_year + user_card;
+    var user_name = $('#quse_xm').val();
+    user_name = (user_name == "" ? "" : "&user_name=" + user_name + "");
+    var dtct = $("#dtct").val();
+    dtct = (dtct == "" ? "10" : "&dtct=" + dtct + "");
+    var url = "Results.aspx?cx=yes" + module_id + work_id + quse_year + user_card + user_name + dtct;
     window.location.href = url;
 }
 function ExportExamitoXls()
@@ -799,6 +803,26 @@ function CallWriteExportStat(ct,sumct)
     else {
         $("#CallState").html(str);
     }
+}
+function SetPageDateCount()
+{
+    var url = window.location.href;
+    var idx = url.indexOf('?cx');
+    var idx2 = url.indexOf('dtct');
+    if (idx2!=-1)
+    {
+        var subStr = new RegExp('&dtct=[0-9]*');//创建正则表达式对象
+        url = url.replace(subStr, "&dtct=" + $("#dtct").val() + "");//替换 dtct 内容
+        window.location.href = url;
+        return;
+    }
+    if (idx == -1) {
+        url = url + "?cx=yes&dtct=" + $("#dtct").val()+"";
+    }
+    else {
+        url = url + "&dtct=" + $("#dtct").val() + "";
+    }
+    window.location.href = url;
 }
 /*帮助函数*/
 String.prototype.replaceAll = function (FindText, RepText) {

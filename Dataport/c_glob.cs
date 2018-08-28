@@ -16,10 +16,6 @@ namespace Dataport
                 return _instans == null ? _instans = new c_glob() : _instans;
             }
         }
-        /// <summary>
-        /// 每页显示条数
-        /// </summary>
-        public const int EVERY_PAGE = 20;
         public string CurentPath
         {
             get
@@ -54,6 +50,23 @@ namespace Dataport
             SplicPage sp = new SplicPage(EvePageCount, gourlname, SumPage);
             return sp.GreatSplitPageTakeQs(CurentIdx);
         }
+        public string LoadReslustSplitPage(int EvePageCount, string zd, string TbName, string gourlname, int CurentIdx, string condtoin, ref int count)
+        {
+            string sql = string.Format(@"SELECT count(b.id) ct from  (select a.id,
+            (select module_name from module_info where id = (select exami_module from exam_layout where id = a.layout_id)) as module_name,
+            (select user_name from user_info where id =a.user_id ) as user_name,
+            (select user_sex from user_info where id = a.user_id) as user_sex,
+            a.user_card,a.work_id,a.exami_module,start_date,
+            (select work_name from work_info where id = a.work_id) as work_name,
+            (select exami_name from exam_layout where id = a.layout_id ) as exami_name,
+            a.score from exami_info a) b {0}", condtoin);
+            DataTable Art_Table = DataCenter.Instans.SearchTb(sql);
+            count = int.Parse(Art_Table.Rows[0]["ct"].ToString());
+            double dx = ((double)count / EvePageCount);
+            int SumPage = (int)Math.Ceiling(dx);
+            SplicPage sp = new SplicPage(EvePageCount, gourlname, SumPage);
+            return sp.GreatSplitPageTakeQs(CurentIdx);
+        }
     }
     public class SplicPage
     {
@@ -76,7 +89,7 @@ namespace Dataport
         }
         public string GreatSplitPageTakeQs(int _CurentPage)
         {
-            string page = "<div class=\"fy\"><ul>";
+            string page = "<div class=\"fy\"><ul><li style=\"font-size:14px;line-height:32px\">每页显示</li><li><select id=\"dtct\" onchange=\"SetPageDateCount();\" style=\"height:32px;line-height:32px;font-size: 14px;\"><option value=\"10\">10条</option><option value=\"20\">20条</option><option value=\"30\">30条</option><option value=\"40\">40条</option><option value=\"50\">50条</option><option value=\"50\">50条</option><option value=\"60\">60条</option><option value=\"70\">70条</option><option value=\"80\">80条</option><option value=\"90\">90条</option><option value=\"100\">100条</option></select></li>";
             PageName = HttpUtility.UrlDecode(PageName);
             int cx_idx = PageName.IndexOf("?cx");
             if (PageName.IndexOf("?page") != -1 || PageName.IndexOf("&page") != -1)

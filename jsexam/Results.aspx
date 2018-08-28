@@ -29,6 +29,8 @@
             <%} %>
         </select>
         <div class="cb"></div>
+        <div class="flt QuseTitle" style="font-size: 16px; margin-top: 6px;">考生姓名:</div>
+        <input class="flt" id="quse_xm" value="" placeholder="请输入考生姓名" style="width: 120px; margin-top: 6px" onchange="setResultSearch();" />
         <div class="flt QuseTitle" style="font-size: 16px; margin-top: 6px;">身份证号:</div>
         <input class="flt" id="quse_sfz" value="" placeholder="请输入身份证号码" style="width: 400px; margin-top: 6px" onchange="setResultSearch();" />
         <a class="flt" style="margin-left: 10px; margin-top: 6px" href="Results.aspx">清除查询</a>
@@ -82,6 +84,8 @@
         var work_id = GetQueryString("work_id");
         var year = GetQueryString("start_date");
         var user_card = GetQueryString("user_card");
+        var user_name = GetQueryString("user_name");
+        var dtct = GetQueryString("dtct");
         if (module_id != null && module_id != "" && module_id != "-1") {
             $("#quse_model").val(module_id);
         }
@@ -93,6 +97,14 @@
         }
         if (user_card != null && user_card != "") {
             $("#quse_sfz").val(user_card);
+        }
+        if (user_name != null && user_name!="")
+        {
+            user_name = decodeURI(user_name);
+            $("#quse_xm").val(user_name);
+        }
+        if (dtct != null && dtct != "") {
+            $("#dtct").val(dtct);
         }
     </script>
     <%} %>

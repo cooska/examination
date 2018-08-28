@@ -77,12 +77,16 @@
     var mid = GetQueryString("mid");
     var zsd = GetQueryString("zsd");
     var pg = GetQueryString("page");
+    var dtct = GetQueryString("dtct");
     if (mid != null && mid != "" && mid != "0") {
         $("#ipt_tx").val(mid);
     }
     if (zsd != null && zsd != "") {
         zsd = decodeURIComponent(HTMLDeCode(zsd));
         $("#ipt_tg").val(zsd);
+    }
+    if (dtct != null && dtct != "") {
+        $("#dtct").val(dtct);
     }
     //if (pg!=null&&pg!=""&&pg!="0")
     //{

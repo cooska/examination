@@ -29,7 +29,7 @@ body{background:#E8E9ED;overflow:hidden;}
 .nrtl_msg{line-height: 60px;height: 60px; width: 160px;cursor: pointer}
 .nrtl_msg div{width: 80px;text-align: right}
 .nrtl_msg img{margin-right: 20px;margin-top: 10px; height: 40px; }
-.singout{cursor: pointer;position: relative;height: 42px;line-height: 42px;border: 1px solid #bfc0c3; width: 110px;background: #fff;top: 60px;left:160px;color:#333;text-align: center; font-size: 14px;display:none}
+.singout{cursor: pointer;position: relative;height: 42px;line-height: 42px;border: 1px solid #bfc0c3; width: 110px;background: #fff;top: 60px;left:160px;color:#333;text-align: center; font-size: 14px;display:none;z-index:999}
 .singout:hover{background: #eee}
 .navl_title{width: 100%;height: 60px;line-height: 60px; font-size: 30px;letter-spacing: 1px;color:#5c5d5f;text-align: center}
 .nav_left ul{background: #E8E9ED}
