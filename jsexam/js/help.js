@@ -809,6 +809,8 @@ function SetPageDateCount()
     var url = window.location.href;
     var idx = url.indexOf('?cx');
     var idx2 = url.indexOf('dtct');
+    var idx3 = url.indexOf('aspx?page');
+    var idx4 = url.indexOf('&page');
     if (idx2!=-1)
     {
         var subStr = new RegExp('&dtct=[0-9]*');//创建正则表达式对象
@@ -816,11 +818,19 @@ function SetPageDateCount()
         window.location.href = url;
         return;
     }
+   
     if (idx == -1) {
         url = url + "?cx=yes&dtct=" + $("#dtct").val()+"";
     }
     else {
         url = url + "&dtct=" + $("#dtct").val() + "";
+    }
+    if (idx3 != -1 || idx4!=-1) {
+        url = url.replace("?page","&page")
+        var idx = GetQueryString("page");
+        var subStr = new RegExp('&page=[0-9]*');//创建正则表达式对象
+        var page = url.replace(subStr, "");//替换 page 内容
+        url = page + "&page=" + idx;
     }
     window.location.href = url;
 }

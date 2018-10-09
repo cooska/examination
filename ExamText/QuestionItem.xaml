@@ -67,7 +67,7 @@
     <Grid>
         <StackPanel Orientation="Horizontal" TextBlock.FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Left" >
             <TextBlock x:Name="q_idx" Text="A、"></TextBlock>
-            <TextBlock x:Name="q_item" Margin="6 0 0 0" Text="" TextWrapping="Wrap"></TextBlock>
+            <TextBlock x:Name="q_item" Margin="6 0 0 0" Text="" MaxWidth="200" TextWrapping="Wrap"></TextBlock>
             <CheckBox x:Name="q_ck" Style="{StaticResource P_CheckChoesItem}" Margin="10 0 0 0" Height="16" IsChecked="False" Width="16" BorderThickness="2" BorderBrush="#333" Click="q_ck_Click"></CheckBox>
         </StackPanel>
     </Grid>
