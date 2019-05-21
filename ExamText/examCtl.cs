@@ -13,8 +13,11 @@
 *******************************************************************
 //----------------------------------------------------------------*/
 #endregion
+using Dataport;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 
@@ -22,7 +25,51 @@ namespace ExamTextServer
 {
     public class examCtl
     {
-      
+        static examCtl _instans = null;
+        public static examCtl Instans
+        {
+            get {
+
+                return _instans == null ? _instans = new examCtl() : _instans;
+            }
+        }
+        static string _GetWcfIp = "";
+        static string GetWcfIp
+        {
+            get
+            {
+                if (_GetWcfIp=="")
+                {
+                    var item = ConfigurationManager.AppSettings["wcfip"];
+                    _GetWcfIp = item;
+                }
+                return _GetWcfIp;
+            }
+        }
+        public userinfo GetUserinfo()
+        {
+            ResponseBase req = new ResponseBase() { module_id = examTCP.module_id };
+            string reqStr = JsonConvert.SerializeObject(req);
+            string Info = HttpHelper.SendHttpRequest(GetWcfIp+"/GetUserInfo",reqStr);
+            userinfo info = JsonConvert.DeserializeObject<userinfo>(Info);
+            return info;
+        }
+        public List<question_list> GetQuestion_list()
+        {
+            ResponseBase req = new ResponseBase() {module_id = examTCP.module_id };
+            string reqStr = JsonConvert.SerializeObject(req);
+            string Info = HttpHelper.SendHttpRequest(GetWcfIp + "/GetQuestion", reqStr);
+            List<question_list> list = JsonConvert.DeserializeObject<List<question_list>>(Info);
+            return list;
+        }
+        public int Answer(int userid,int score)
+        {
+            ResponseBase req = new ResponseBase() {user_id = userid, score= score,module_id = examTCP.module_id };
+            string reqStr = JsonConvert.SerializeObject(req);
+            string Info = HttpHelper.SendHttpRequest(GetWcfIp + "/Answer", reqStr);
+            ResponseBase item = JsonConvert.DeserializeObject<ResponseBase>(Info);
+            return item.code;
+        }
     }
     public class root
     {
@@ -35,6 +82,8 @@ namespace ExamTextServer
         /// </summary>
         public sbyte mz { get; set; }
         public sbyte model_type { get; set; }
+        public string module_name { get; set; }
+        public int module_id { get; set; }
         public userinfo user_info { get; set; }
         public List<question_list> question_list { get; set; }
         /// <summary>
@@ -116,5 +165,23 @@ namespace ExamTextServer
         /// 单个试题得分
         /// </summary>
         public sbyte score { get; set; }
+    }
+    public class ResponseBase
+    {
+        /// <summary>
+        /// 1:失败/0:成功
+        /// </summary>
+        public int code { get; set; }
+        public string Message { get; set; }
+        /// <summary>
+        /// 考试卡
+        /// </summary>
+        public string exam_card { get; set; }
+        /// <summary>
+        /// 分数
+        /// </summary>
+        public int score { get; set; }
+        public int user_id { get; set; }
+         public int module_id { get; set; }
     }
 }

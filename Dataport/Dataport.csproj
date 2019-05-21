@@ -77,6 +77,8 @@
     <Compile Include="c_glob.cs" />
     <Compile Include="DataCenter.cs" />
     <Compile Include="DataToExcel.cs" />
+    <Compile Include="HttpHeaderEx.cs" />
+    <Compile Include="HttpHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="uslogin.cs" />
   </ItemGroup>

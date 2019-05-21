@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ExamTextServer"
         mc:Ignorable="d" 
-        Title="湘西州专业技术人员公需科目考试作答系统V1.0 [正在连接考试服务器....]" ResizeMode="NoResize" ShowInTaskbar="False" WindowState="Maximized" WindowStyle="None"  Height="730" Width="1000"  WindowStartupLocation="CenterScreen">
+        Title="湘西州专业技术人员公需科目考试作答系统V1.0 [正在连接考试服务器....]" ResizeMode="NoResize" ShowInTaskbar="False" WindowState="Maximized" WindowStyle="None"  Height="530" Width="1000"  WindowStartupLocation="CenterScreen">
     <!--ResizeMode="NoResize" ShowInTaskbar="False" WindowState="Maximized" WindowStyle="None"-->
     
     <Window.Resources>

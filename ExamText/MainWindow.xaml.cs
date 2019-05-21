@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Dataport;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
@@ -95,6 +96,8 @@ namespace ExamTextServer
         /// 用户头像地址
         /// </summary>
         string user_path = AppDomain.CurrentDomain.BaseDirectory + "user.jpg";
+
+        userinfo Info = null;
         #endregion
         void Post_ActionTime(dlg_ActionTime hd)
         {
@@ -142,6 +145,7 @@ namespace ExamTextServer
             Post_IintData(ConServer);
             btn_style = (Style)this.FindResource("BtnIcon");
         }
+
         void ConServer()
         {
             string[] ips = GetCfg.Split(':');
@@ -149,7 +153,6 @@ namespace ExamTextServer
             ExTCP.On_isConToServer += ExTCP_On_isConToServer;
             ExTCP.On_isGetUserInfo += ExTCP_On_isGetUserInfo;
             ExTCP.On_ReConServer += ExTCP_On_ReConServer;
-            ExTCP.On_isGetTitleInfo += ExTCP_On_isGetTitleInfo;
             ExTCP.On_NextExma += ExTCP_On_NextExma; 
             ExTCP.Connect();
         }
@@ -167,12 +170,6 @@ namespace ExamTextServer
             }));
         }
 
-        private void ExTCP_On_isGetTitleInfo(string Title)
-        {
-            this.Dispatcher.BeginInvoke(new Action(()=> {
-                tbk_title.Text = Title.Split(':')[1];
-            }));
-        }
 
         /// <summary>
         /// 作答中与服务器断开连节再连接的处理
@@ -195,35 +192,44 @@ namespace ExamTextServer
                 return item;
             }
         }
-        private void ExTCP_On_isGetUserInfo(root Info)
+       
+        private void ExTCP_On_isGetUserInfo(int moduleid,string title)
         {
-            if (Info.user_info != null)//用户信息不等于空就设置用户信息
+            //作答试题信息
+            List<question_list> qlist = null;
+            examTCP.module_id = moduleid;
+            Dispatcher.BeginInvoke(new Action(()=> {
+                this.tbk_title.Text = title;
+            }));
+            Info = examCtl.Instans.GetUserinfo();
+            if (Info != null)//用户信息不等于空就设置用户信息
             {
-                SetUserInfo(Info.user_info);
+                 SetUserInfo(Info);
                 //如果本地文件不存在则问服务器获取考试试题
                 if (!ExTCP.HasQuseFile)
                 {
-                  ExTCP.SendMsg("{\"model_type\":4,\"data\":\"ask\"}");
+                    fz = 0;
+                    mz = 0;
+                    qlist = examCtl.Instans.GetQuestion_list();
+                    AddQuesBtn(qlist);
                 }
-                else 
-                {//如果本地考试文件存在就直接加载已保存试题信息
-                    Info.question_list = new List<question_list>();
-                    Info.question_list = ExTCP.GET_ques_list.question_list;
-                    fz = ExTCP.GET_ques_list.fz;
-                    mz = ExTCP.GET_ques_list.mz;
-                    AddQuesBtn(Info.question_list);
+                else
+                {
+                   //如果本地考试文件存在就直接加载已保存试题信息
+                   qlist = ExTCP.GET_ques_list.question_list;
+                   fz = ExTCP.GET_ques_list.fz;
+                   mz = ExTCP.GET_ques_list.mz;
+                   AddQuesBtn(qlist);
                 }
                 //以下设置为可以开考
-                this.Dispatcher.BeginInvoke(new Action(()=> {
+                this.Dispatcher.BeginInvoke(new Action(() =>
+                {
                     this.IsEnabled = true;
                     BackOrSetExamStat(false);
-                }));                
+                }));
             }
-            else//直接获取考试信息加载
-            {
-                fz = 0;
-                mz = 0;
-                AddQuesBtn(Info.question_list);
+            else {
+                MessageBox.Show("获取考生信息失败,请联系监考老师重启作答客户端!");
             }
         }
         /// <summary>
@@ -238,16 +244,17 @@ namespace ExamTextServer
                 {
                     if (userinfo.user_head_img!=null)
                     {
+                        //new BitmapImage(new Uri(userinfo.user_head_img,UriKind.Absolute)); 
                         byte[] arr = Convert.FromBase64String(userinfo.user_head_img);
                         ks_img.Source = LoadImage(arr); //new BitmapImage(new Uri(Base64StringToImage(arr), UriKind.Absolute));/
                     }
-                    ks_name.Text = userinfo.user_name;
-                    ks_xb.Text = userinfo.user_sex;
-                    ks_sfz.Text = userinfo.user_card;
-                    ks_dw.Text = userinfo.user_work_str;
-                    ks_sd.Text = userinfo.user_place_str;
-                    ks_zkzh.Text = userinfo.exam_card;
-                    ks_zwh.Text = userinfo.exam_card.Substring(userinfo.exam_card.Length - 2, 2);
+                    ks_name.Text = userinfo.user_name==null?"": userinfo.user_name;
+                    ks_xb.Text = userinfo.user_sex==null?"": userinfo.user_sex;
+                    ks_sfz.Text = userinfo.user_card==null?"": userinfo.user_card;
+                    ks_dw.Text = userinfo.user_work_str==null?"": userinfo.user_work_str;
+                    ks_sd.Text = userinfo.user_place_str==null?"": userinfo.user_place_str;
+                    ks_zkzh.Text = userinfo.exam_card==null?"": userinfo.exam_card;
+                    ks_zwh.Text = userinfo.exam_card==null?"":userinfo.exam_card.Substring(userinfo.exam_card.Length - 2, 2);
                     if (!String.IsNullOrEmpty(userinfo.start_time))
                     {
                         ExamTime = DateTime.Parse(userinfo.start_time);//DateTime.Parse("2018-07-02 11:00:00"); //
@@ -679,13 +686,19 @@ namespace ExamTextServer
         void SubMit()
         {
             ExTCP.isAnwser = false;//作答完毕
-            ExTCP.DeQuseFile();
-            sbyte SumNum = (sbyte)QuseList.FindAll(s => s.score == 1).Count;
-            //提交得分
-            ExTCP.SendMsg("{\"model_type\":3,\"score\":\"" + SumNum + "\"}");
             this.Dispatcher.BeginInvoke(new Action(() =>{
-                MessageBox.Show("交卷成功，请考生离开考场！","考试结束");
-                this.IsEnabled = false;
+                //计算得分
+                sbyte SumNum = (sbyte)QuseList.FindAll(s => s.score == 1).Count;
+                int rst = examCtl.Instans.Answer(Info.id,SumNum);
+                if (rst == 0)
+                {
+                    ExTCP.DeQuseFile();//删除本地缓存
+                    MessageBox.Show("交卷成功，请考生离开考场！", "考试结束");
+                    this.IsEnabled = false;
+                }
+                else {
+                    MessageBox.Show("分数提交失败，请联系监考员处理！");
+                }
             }));
         }
     }

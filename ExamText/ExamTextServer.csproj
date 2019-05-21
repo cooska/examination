@@ -154,6 +154,10 @@
       <Project>{30a289f0-2715-49c7-9c72-dd2cfa50cde5}</Project>
       <Name>Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Dataport\Dataport.csproj">
+      <Project>{3FEAECBE-EF8F-449A-9364-6C8D572966CD}</Project>
+      <Name>Dataport</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

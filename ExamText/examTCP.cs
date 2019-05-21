@@ -30,12 +30,18 @@ namespace ExamTextServer
     public class examTCP
     {
         #region 变量定义
+        /// <summary>
+        /// 链接锁
+        /// </summary>
+        static object ConServer = new object();
+        /// <summary>
+        /// 模型id
+        /// </summary>
+        public static int module_id { get; set; }
         public delegate void dlg_isConToServer(bool YesOrNo);
         public event dlg_isConToServer On_isConToServer;
-        public delegate void dlg_isGetUserInfo(root userinfo); 
+        public delegate void dlg_isGetUserInfo(int moduleid,string title); 
         public event dlg_isGetUserInfo On_isGetUserInfo;
-        public delegate void dlg_isGetTitleInfo(string Title);
-        public event dlg_isGetTitleInfo On_isGetTitleInfo;
         public delegate void dlg_ReConServer();
         public event dlg_ReConServer On_ReConServer;
         public delegate void dlg_NextExma();
@@ -88,32 +94,32 @@ namespace ExamTextServer
             try
             {
                 //如果线程处于开启状态关掉
-                foreach (var item in threadHeart)
-                {
-                    if (item != null)
-                    {
-                        item.Abort();
-                    }
-                }
-                //实例对象
+                //foreach (var item in threadHeart)
+                //{
+                //    if (item != null)
+                //    {
+                //        item.Abort();
+                //    }
+                //}
+                //实例连接对象
                 tcpClient = new TcpClient(IP, port);
-                if (On_isConToServer != null)
-                {
+                if (On_isConToServer != null){
                     On_isConToServer(true);
                 }
                 ActionWork();
-
             }
             catch (Exception ex)
             {
-                if (On_isConToServer != null)
-                {
+                if (On_isConToServer != null){
                     On_isConToServer(false);
                 }
                 Thread.Sleep(1000);
                 Reconnect();
             }
         }
+        /// <summary>
+        /// 开启工作
+        /// </summary>
         void ActionWork()
         {
             for (int i = 0; i < threadHeart.Length; i++)
@@ -154,7 +160,7 @@ namespace ExamTextServer
                     } while (bytesRead == 512);
                     bw.Flush();
                     DoActionByMes(sb.ToString());
-                    Thread.Sleep(1000);
+                    Thread.Sleep(200);
                 }
             }
             catch (Exception ex)
@@ -164,12 +170,11 @@ namespace ExamTextServer
             }
 
         }
-
+        Regex rg = new Regex("@@@(.*?)###", RegexOptions.Multiline | RegexOptions.IgnoreCase);
         void DoActionByMes(string msg)
         {
             try
             {
-                Regex rg = new Regex("@@@(.*?)###", RegexOptions.Multiline | RegexOptions.IgnoreCase);
                 MatchCollection mcl = rg.Matches(msg);
                 foreach (Match item in mcl)
                 {
@@ -179,6 +184,26 @@ namespace ExamTextServer
                         if (Newmsg != "hello" && Newmsg != "" && Newmsg.ToLower().IndexOf("_title_") == -1)
                         {
                             var Jsonitem = JsonConvert.DeserializeObject<root>(Newmsg);
+                            switch (Jsonitem.model_type)
+                            {
+                                case 1://获取用户基础信息
+                                    if (On_isGetUserInfo != null)
+                                    {
+                                        On_isGetUserInfo(Jsonitem.module_id,Jsonitem.module_name);
+                                        //写日志
+                                        WriteLog(string.Format("获取考生信息:module_id=>{0}",module_id));
+                                    }
+                                    break;
+                                case 5://服务器与客户端主动断开
+                                    if (On_NextExma != null)
+                                    {
+                                        On_NextExma();
+                                        return;
+                                    }
+                                    break;
+                            }
+
+
                             if (Jsonitem.model_type==5)
                             {
                                 if (On_NextExma != null)
@@ -187,22 +212,7 @@ namespace ExamTextServer
                                     return;
                                 }
                             }
-                            if (On_isGetUserInfo != null)
-                            {
-                                On_isGetUserInfo(Jsonitem);
-                                if(Jsonitem.user_info!=null)
-                                {
-                                    //写日志
-                                    WriteLog(Newmsg);
-                                }
-                            }
-                        }
-                        else if (Newmsg.ToLower().IndexOf("_title_") != -1)
-                        {
-                            if (On_isGetTitleInfo != null)
-                            {
-                                On_isGetTitleInfo(Newmsg);
-                            }
+                            
                         }
                     }
 
@@ -293,23 +303,25 @@ namespace ExamTextServer
         /// </summary>
         public void Reconnect()
         {
-            if (tcpClient != null)
+            lock (ConServer)
             {
-                tcpClient.Close();//关闭连接在重新连
-            }
-            //等待3秒后重连
-            Thread.Sleep(2000);
-            //如果用户没有作答则可一种后台重连
-            if (!isAnwser)
-            {
-                Connect();
-            }
-            else
-            {
-                //如果已作答则通知界面重连
-                if (On_ReConServer != null)
+                if (tcpClient != null)
                 {
-                    On_ReConServer();
+                    tcpClient.Close();//关闭连接在重新连
+                }
+                //等待3秒后重连
+                Thread.Sleep(2000);
+                //如果用户没有作答则可一种后台重连
+                if (!isAnwser)
+                {
+                    Connect();
+                }
+                else
+                {
+                    //如果已作答则通知界面重连
+                    if (On_ReConServer != null){
+                        On_ReConServer();
+                    }
                 }
             }
         }
@@ -339,6 +351,9 @@ namespace ExamTextServer
                     msgs = string.Format("@@@{0}###", msgs);
                     byte[] msg = Encoding.BigEndianUnicode.GetBytes(msgs);
                     //然后将字节数组写入网络流
+
+                    var xx = tcpClient.Connected;
+            
                     bw.Write(msg);
                     bw.Flush();
                     if (msgs == "0000")//心跳写单独的文件
