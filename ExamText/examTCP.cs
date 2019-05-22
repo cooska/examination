@@ -38,9 +38,12 @@ namespace ExamTextServer
         /// 模型id
         /// </summary>
         public static int module_id { get; set; }
+        public static string local_id { get; set; }
+        public static int exam_time { get; set; }
+        public static int exam_id { get; set; }
         public delegate void dlg_isConToServer(bool YesOrNo);
         public event dlg_isConToServer On_isConToServer;
-        public delegate void dlg_isGetUserInfo(int moduleid,string title); 
+        public delegate void dlg_isGetUserInfo(string title); 
         public event dlg_isGetUserInfo On_isGetUserInfo;
         public delegate void dlg_ReConServer();
         public event dlg_ReConServer On_ReConServer;
@@ -189,30 +192,30 @@ namespace ExamTextServer
                                 case 1://获取用户基础信息
                                     if (On_isGetUserInfo != null)
                                     {
-                                        On_isGetUserInfo(Jsonitem.module_id,Jsonitem.module_name);
+                                        module_id = Jsonitem.module_id;
+                                        local_id = Jsonitem.local_ip;
+                                        exam_time = Jsonitem.exam_time;
+                                        exam_id = Jsonitem.exam_id;
+                                        On_isGetUserInfo(Jsonitem.module_name);
                                         //写日志
                                         WriteLog(string.Format("获取考生信息:module_id=>{0}",module_id));
                                     }
                                     break;
-                                case 5://服务器与客户端主动断开
+                                case 5://切换下一场考试
                                     if (On_NextExma != null)
                                     {
+                                        //函数执行顺序不能变 先执行下一场请求 再获取用户信息
                                         On_NextExma();
-                                        return;
+                                        exam_id = Jsonitem.exam_id;
+                                        //删除当前试题缓存
+                                        DeQuseFile();
+                                        On_isGetUserInfo(Jsonitem.module_name);
+                                        //写日志
+                                        WriteLog(string.Format("获取下一场考生信息:module_id=>{0}", module_id));
+                                       
                                     }
                                     break;
-                            }
-
-
-                            if (Jsonitem.model_type==5)
-                            {
-                                if (On_NextExma != null)
-                                {
-                                    On_NextExma();
-                                    return;
-                                }
-                            }
-                            
+                            } 
                         }
                     }
 

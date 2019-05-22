@@ -159,14 +159,13 @@ namespace ExamTextServer
 
         private void ExTCP_On_NextExma()
         {
-            ExTCP.SendMsg("{\"model_type\":5,\"data\":\"next\"}");
-            ExTCP.DeQuseFile();
-            QuseList.Clear();
+            //设置为重新链接服务
+            IsReConServer = true;
+            IsBreak = false;
             this.Dispatcher.BeginInvoke(new Action(() =>
             {
                 this.Title = "湘西州专业技术人员公需科目考试作答系统 [正在获取下一场考试信息...]";
                 tbk_tagMsg.Text = this.Title;
-                IsBreak = false;
             }));
         }
 
@@ -193,11 +192,10 @@ namespace ExamTextServer
             }
         }
        
-        private void ExTCP_On_isGetUserInfo(int moduleid,string title)
+        private void ExTCP_On_isGetUserInfo(string title)
         {
             //作答试题信息
             List<question_list> qlist = null;
-            examTCP.module_id = moduleid;
             Dispatcher.BeginInvoke(new Action(()=> {
                 this.tbk_title.Text = title;
             }));
@@ -342,7 +340,13 @@ namespace ExamTextServer
         }
         void ActionTime()
         {
-            DateTime fiveM = DateTime.Parse("00:01:01"); //DateTime.Parse("01:00:01");
+            //默认加载新时间
+            DateTime fiveM = DateTime.Parse(string.Format("00:{0}:01", examTCP.exam_time)); //DateTime.Now.AddMinutes(examTCP.exam_time);
+            if (ExTCP.HasQuseFile)
+            {
+               fiveM = DateTime.Parse(string.Format("00:{0}:{1}",fz,mz));
+            }
+            
             var rstTime = ExamTime.Subtract(DateTime.Now);
             if (rstTime.TotalMinutes < 0&& rstTime.TotalMinutes>-SumTime)
             {
@@ -385,7 +389,7 @@ namespace ExamTextServer
         void AddQuesBtn(List<question_list> list)
         {
             QuseList = list;
-            if (list!=null)
+            if (list != null & list.Count>0)
             {
                 SolidColorBrush cor = null;
                 btn_idx.Dispatcher.BeginInvoke(new Action(() =>
@@ -417,6 +421,9 @@ namespace ExamTextServer
                     //WriteQuse(60,00);//写入试题信息
                     SetQustion(list[0], 0, (sbyte)list.Count);
                 }));
+            }
+            else {
+                MessageBox.Show("获取试题信息失败,请联系监考老师!");
             }
            
         }
@@ -678,6 +685,8 @@ namespace ExamTextServer
             {
                 //跳出倒计时 自动提交考试成绩
                 IsBreak = true;
+                //恢复默认可提交试卷状态
+                IsReConServer = false;
             }
         }
         /// <summary>
@@ -693,10 +702,12 @@ namespace ExamTextServer
                 if (rst == 0)
                 {
                     ExTCP.DeQuseFile();//删除本地缓存
-                    MessageBox.Show("交卷成功，请考生离开考场！", "考试结束");
                     this.IsEnabled = false;
+                    MessageBox.Show("交卷成功，请考生离开考场！", "考试结束");
                 }
                 else {
+                    ExTCP.DeQuseFile();//删除本地缓存
+                    this.IsEnabled = false;
                     MessageBox.Show("分数提交失败，请联系监考员处理！");
                 }
             }));

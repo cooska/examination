@@ -48,9 +48,12 @@ namespace ExamTextServer
         }
         public userinfo GetUserinfo()
         {
-            ResponseBase req = new ResponseBase() { module_id = examTCP.module_id };
+            ResponseBase req = new ResponseBase() { exam_id = examTCP.exam_id,local_ip = examTCP.local_id,module_id = examTCP.module_id };
             string reqStr = JsonConvert.SerializeObject(req);
             string Info = HttpHelper.SendHttpRequest(GetWcfIp+"/GetUserInfo",reqStr);
+            if (Info==""){
+                return null;
+            }
             userinfo info = JsonConvert.DeserializeObject<userinfo>(Info);
             return info;
         }
@@ -59,15 +62,18 @@ namespace ExamTextServer
             ResponseBase req = new ResponseBase() {module_id = examTCP.module_id };
             string reqStr = JsonConvert.SerializeObject(req);
             string Info = HttpHelper.SendHttpRequest(GetWcfIp + "/GetQuestion", reqStr);
+            if (Info=="") { return null; }
             List<question_list> list = JsonConvert.DeserializeObject<List<question_list>>(Info);
             return list;
         }
         public int Answer(int userid,int score)
         {
-            ResponseBase req = new ResponseBase() {user_id = userid, score= score,module_id = examTCP.module_id };
+            ResponseBase req = new ResponseBase() {user_id = userid,score = score,module_id = examTCP.module_id };
             string reqStr = JsonConvert.SerializeObject(req);
             string Info = HttpHelper.SendHttpRequest(GetWcfIp + "/Answer", reqStr);
             ResponseBase item = JsonConvert.DeserializeObject<ResponseBase>(Info);
+            if (item==null)
+            { return 1; }
             return item.code;
         }
     }
@@ -90,6 +96,11 @@ namespace ExamTextServer
         /// 考试总分数
         /// </summary>
         public sbyte score { get; set; }
+
+        public string local_ip { get; set; }
+
+        public int exam_time { get; set; }
+        public int exam_id { get; set; }
 
     }
     public class userinfo
@@ -182,6 +193,9 @@ namespace ExamTextServer
         /// </summary>
         public int score { get; set; }
         public int user_id { get; set; }
-         public int module_id { get; set; }
+        public int module_id { get; set; }
+        public string local_ip { get; set; }
+        public string exam_time { get; set; }
+        public int exam_id { get; set; }
     }
 }
