@@ -202,18 +202,21 @@ namespace ExamTextServer
                                     }
                                     break;
                                 case 5://切换下一场考试
+                                    exam_id = Jsonitem.exam_id;
                                     if (On_NextExma != null)
                                     {
                                         //函数执行顺序不能变 先执行下一场请求 再获取用户信息
-                                        On_NextExma();
-                                        exam_id = Jsonitem.exam_id;
                                         //删除当前试题缓存
+                                        On_NextExma();
                                         DeQuseFile();
+                                    }
+                                    if (On_isGetUserInfo!=null)
+                                    {
                                         On_isGetUserInfo(Jsonitem.module_name);
                                         //写日志
                                         WriteLog(string.Format("获取下一场考生信息:module_id=>{0}", module_id));
-                                       
                                     }
+                                  
                                     break;
                             } 
                         }
@@ -354,9 +357,7 @@ namespace ExamTextServer
                     msgs = string.Format("@@@{0}###", msgs);
                     byte[] msg = Encoding.BigEndianUnicode.GetBytes(msgs);
                     //然后将字节数组写入网络流
-
                     var xx = tcpClient.Connected;
-            
                     bw.Write(msg);
                     bw.Flush();
                     if (msgs == "0000")//心跳写单独的文件

@@ -46,23 +46,23 @@
     </Reference>
     <Reference Include="NPOI, Version=1.2.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\jsexam\bin\NPOI.dll</HintPath>
+      <HintPath>..\ExamText\dll\NPOI.dll</HintPath>
     </Reference>
     <Reference Include="NPOI.HPSF, Version=1.2.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\jsexam\bin\NPOI.HPSF.dll</HintPath>
+      <HintPath>..\ExamText\dll\NPOI.HPSF.dll</HintPath>
     </Reference>
     <Reference Include="NPOI.HSSF, Version=1.2.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\jsexam\bin\NPOI.HSSF.dll</HintPath>
+      <HintPath>..\ExamText\dll\NPOI.HSSF.dll</HintPath>
     </Reference>
     <Reference Include="NPOI.POIFS, Version=1.2.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\jsexam\bin\NPOI.POIFS.dll</HintPath>
+      <HintPath>..\ExamText\dll\NPOI.POIFS.dll</HintPath>
     </Reference>
     <Reference Include="NPOI.Util, Version=1.2.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\jsexam\bin\NPOI.Util.dll</HintPath>
+      <HintPath>..\ExamText\dll\NPOI.Util.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

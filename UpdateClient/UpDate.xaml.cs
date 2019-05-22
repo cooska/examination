@@ -149,7 +149,8 @@ namespace UpdateClient
                     }
                     //删除下载的压缩包文件
                     File.Delete(zipFilePath);
-                    foreach (var item in Directory.GetFiles(AppPath + "up"))
+                    string[] Arr = Directory.GetFiles(AppPath + "up");
+                    foreach (var item in Arr)
                     {
                         string FileName = item.Substring(item.LastIndexOf("\\") + 1);
                         File.Copy(item, AppPath + FileName, true);

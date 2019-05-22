@@ -13,3 +13,17 @@ D:\jsexam\UpdateClient\obj\Release\UpdateClient.csproj.GenerateResource.Cache
 D:\jsexam\UpdateClient\obj\Release\UpdateClient.csproj.CoreCompileInputs.cache
 D:\jsexam\UpdateClient\obj\Release\UpdateClient.exe
 D:\jsexam\UpdateClient\obj\Release\UpdateClient.pdb
+D:\考试系统\UpdateClient\bin\Release\UpdateClient.exe
+D:\考试系统\UpdateClient\bin\Release\UpdateClient.pdb
+D:\考试系统\UpdateClient\obj\Release\UpdateClient.csprojResolveAssemblyReference.cache
+D:\考试系统\UpdateClient\obj\Release\UpDate.g.cs
+D:\考试系统\UpdateClient\obj\Release\App.g.cs
+D:\考试系统\UpdateClient\obj\Release\UpdateClient_MarkupCompile.cache
+D:\考试系统\UpdateClient\obj\Release\UpdateClient_MarkupCompile.lref
+D:\考试系统\UpdateClient\obj\Release\UpDate.baml
+D:\考试系统\UpdateClient\obj\Release\UpdateClient.g.resources
+D:\考试系统\UpdateClient\obj\Release\UpdateClient.Properties.Resources.resources
+D:\考试系统\UpdateClient\obj\Release\UpdateClient.csproj.GenerateResource.Cache
+D:\考试系统\UpdateClient\obj\Release\UpdateClient.csproj.CoreCompileInputs.cache
+D:\考试系统\UpdateClient\obj\Release\UpdateClient.exe
+D:\考试系统\UpdateClient\obj\Release\UpdateClient.pdb

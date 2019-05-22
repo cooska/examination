@@ -26,6 +26,10 @@ namespace ExamTextServer
     {
         #region 变量定义
         /// <summary>
+        /// 考试时间完成
+        /// </summary>
+        bool IsTimesUp = false;
+        /// <summary>
         /// 是否跳出计时
         /// </summary>
         bool IsBreak = false;
@@ -107,18 +111,6 @@ namespace ExamTextServer
         {
             dlg_ActionTime hd = (dlg_ActionTime)ars.AsyncState;
             hd.EndInvoke(ars);
-            //不是重新连接服务器状态提交试卷
-            if (!IsReConServer)
-            {
-                SubMit();
-            }
-            //如果时间停止并且开始作答
-            if (ExTCP.isAnwser)
-            {
-                MessageBox.Show("与服务器连节断开,请监考老师重新打开程序,继续作答!");
-                ResStartApp();//重新打开程序
-            }
-           
         }
         void Post_IintData(dlg_ActionTime hd)
         {
@@ -153,15 +145,16 @@ namespace ExamTextServer
             ExTCP.On_isConToServer += ExTCP_On_isConToServer;
             ExTCP.On_isGetUserInfo += ExTCP_On_isGetUserInfo;
             ExTCP.On_ReConServer += ExTCP_On_ReConServer;
-            ExTCP.On_NextExma += ExTCP_On_NextExma; 
+            ExTCP.On_NextExma += ExTCP_On_NextExma;
             ExTCP.Connect();
         }
 
         private void ExTCP_On_NextExma()
         {
-            //设置为重新链接服务
-            IsReConServer = true;
-            IsBreak = false;
+            //下一场考试必须跳出倒计时
+            IsBreak = true;
+            //恢复默认可提交试卷状态
+            IsReConServer = false;
             this.Dispatcher.BeginInvoke(new Action(() =>
             {
                 this.Title = "湘西州专业技术人员公需科目考试作答系统 [正在获取下一场考试信息...]";
@@ -191,44 +184,47 @@ namespace ExamTextServer
                 return item;
             }
         }
-       
+
         private void ExTCP_On_isGetUserInfo(string title)
         {
-            //作答试题信息
-            List<question_list> qlist = null;
-            Dispatcher.BeginInvoke(new Action(()=> {
-                this.tbk_title.Text = title;
-            }));
-            Info = examCtl.Instans.GetUserinfo();
-            if (Info != null)//用户信息不等于空就设置用户信息
+            Dispatcher.BeginInvoke(new Action(() =>
             {
-                 SetUserInfo(Info);
-                //如果本地文件不存在则问服务器获取考试试题
-                if (!ExTCP.HasQuseFile)
+                //作答试题信息
+                List<question_list> qlist = null;
+                this.tbk_title.Text = title;
+                Info = examCtl.Instans.GetUserinfo();
+                if (Info != null)//用户信息不等于空就设置用户信息
                 {
-                    fz = 0;
-                    mz = 0;
-                    qlist = examCtl.Instans.GetQuestion_list();
-                    AddQuesBtn(qlist);
+                    SetUserInfo(Info);
+                    //如果本地文件不存在则问服务器获取考试试题
+                    if (!ExTCP.HasQuseFile)
+                    {
+                        fz = 0;
+                        mz = 0;
+                        qlist = examCtl.Instans.GetQuestion_list();
+                        AddQuesBtn(qlist);
+                    }
+                    else
+                    {
+                        //如果本地考试文件存在就直接加载已保存试题信息
+                        qlist = ExTCP.GET_ques_list.question_list;
+                        fz = ExTCP.GET_ques_list.fz;
+                        mz = ExTCP.GET_ques_list.mz;
+                        if (QuseList != null && QuseList.Count > 0)
+                        {
+                            QuseList.Clear();
+                        }
+                        AddQuesBtn(qlist);
+                    }
+                    //以下设置为可以开考
+                    this.IsEnabled = true;
+                    BackOrSetExamStat(false);
                 }
                 else
                 {
-                   //如果本地考试文件存在就直接加载已保存试题信息
-                   qlist = ExTCP.GET_ques_list.question_list;
-                   fz = ExTCP.GET_ques_list.fz;
-                   mz = ExTCP.GET_ques_list.mz;
-                   AddQuesBtn(qlist);
+                    MessageBox.Show("获取考生信息失败,请联系监考老师重启作答客户端!");
                 }
-                //以下设置为可以开考
-                this.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    this.IsEnabled = true;
-                    BackOrSetExamStat(false);
-                }));
-            }
-            else {
-                MessageBox.Show("获取考生信息失败,请联系监考老师重启作答客户端!");
-            }
+            }));
         }
         /// <summary>
         /// 设置用户信息
@@ -240,19 +236,19 @@ namespace ExamTextServer
             {
                 this.Dispatcher.BeginInvoke(new Action(() =>
                 {
-                    if (userinfo.user_head_img!=null)
+                    if (userinfo.user_head_img != null)
                     {
                         //new BitmapImage(new Uri(userinfo.user_head_img,UriKind.Absolute)); 
                         byte[] arr = Convert.FromBase64String(userinfo.user_head_img);
                         ks_img.Source = LoadImage(arr); //new BitmapImage(new Uri(Base64StringToImage(arr), UriKind.Absolute));/
                     }
-                    ks_name.Text = userinfo.user_name==null?"": userinfo.user_name;
-                    ks_xb.Text = userinfo.user_sex==null?"": userinfo.user_sex;
-                    ks_sfz.Text = userinfo.user_card==null?"": userinfo.user_card;
-                    ks_dw.Text = userinfo.user_work_str==null?"": userinfo.user_work_str;
-                    ks_sd.Text = userinfo.user_place_str==null?"": userinfo.user_place_str;
-                    ks_zkzh.Text = userinfo.exam_card==null?"": userinfo.exam_card;
-                    ks_zwh.Text = userinfo.exam_card==null?"":userinfo.exam_card.Substring(userinfo.exam_card.Length - 2, 2);
+                    ks_name.Text = userinfo.user_name == null ? "" : userinfo.user_name;
+                    ks_xb.Text = userinfo.user_sex == null ? "" : userinfo.user_sex;
+                    ks_sfz.Text = userinfo.user_card == null ? "" : userinfo.user_card;
+                    ks_dw.Text = userinfo.user_work_str == null ? "" : userinfo.user_work_str;
+                    ks_sd.Text = userinfo.user_place_str == null ? "" : userinfo.user_place_str;
+                    ks_zkzh.Text = userinfo.exam_card == null ? "" : userinfo.exam_card;
+                    ks_zwh.Text = userinfo.exam_card == null ? "" : userinfo.exam_card.Substring(userinfo.exam_card.Length - 2, 2);
                     if (!String.IsNullOrEmpty(userinfo.start_time))
                     {
                         ExamTime = DateTime.Parse(userinfo.start_time);//DateTime.Parse("2018-07-02 11:00:00"); //
@@ -340,15 +336,15 @@ namespace ExamTextServer
         }
         void ActionTime()
         {
+            IsBreak = false;
             //默认加载新时间
             DateTime fiveM = DateTime.Parse(string.Format("00:{0}:01", examTCP.exam_time)); //DateTime.Now.AddMinutes(examTCP.exam_time);
             if (ExTCP.HasQuseFile)
             {
-               fiveM = DateTime.Parse(string.Format("00:{0}:{1}",fz,mz));
+                fiveM = DateTime.Parse(string.Format("00:{0}:{1}", fz, mz));
             }
-            
             var rstTime = ExamTime.Subtract(DateTime.Now);
-            if (rstTime.TotalMinutes < 0&& rstTime.TotalMinutes>-SumTime)
+            if (rstTime.TotalMinutes < 0 && rstTime.TotalMinutes > -SumTime)
             {
                 int Minute = (int)DateTime.Now.Subtract(ExamTime).TotalMinutes;
                 Minute = fz == 0 ? (SumTime - Minute) : fz;//计算剩余时间
@@ -368,6 +364,8 @@ namespace ExamTextServer
                     }
                     if (fiveM.Hour == 0 && fiveM.Minute == 0 && fiveM.Second == 0)
                     {
+                        //设置时间结束
+                        IsTimesUp = true;
                         IsBreak = true;
                     }
                 }));
@@ -377,6 +375,12 @@ namespace ExamTextServer
                 }
                 Thread.Sleep(1000);
             }
+            if (IsTimesUp)
+            {
+                //时间结束自动交卷
+                SubMit();
+            }
+            
         }
         /// <summary>
         /// 写入考试信息
@@ -389,7 +393,7 @@ namespace ExamTextServer
         void AddQuesBtn(List<question_list> list)
         {
             QuseList = list;
-            if (list != null & list.Count>0)
+            if (list != null & list.Count > 0)
             {
                 SolidColorBrush cor = null;
                 btn_idx.Dispatcher.BeginInvoke(new Action(() =>
@@ -422,10 +426,11 @@ namespace ExamTextServer
                     SetQustion(list[0], 0, (sbyte)list.Count);
                 }));
             }
-            else {
+            else
+            {
                 MessageBox.Show("获取试题信息失败,请联系监考老师!");
             }
-           
+
         }
         string[] qidx_arr = new string[] { "A、", "B、", "C、", "D、", "E、", "F、", "G、", "H、" };
         /// <summary>
@@ -513,6 +518,10 @@ namespace ExamTextServer
         /// <param name="e"></param>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            //全局点击次数清零
+            click_ct = 0;
+            //设置时间未结束
+            IsTimesUp = false;
             BackOrSetExamStat(true);
             Post_ActionTime(ActionTime);//启动考试结束时间
         }
@@ -527,9 +536,10 @@ namespace ExamTextServer
             btn_idx.IsEnabled = b;
             btn_dwom.IsEnabled = b;
             btn_up.IsEnabled = b;
-            btn_start.Visibility = b==true?Visibility.Collapsed: Visibility.Visible;
-            time_paner.Visibility = b==true?Visibility.Visible:Visibility.Collapsed;
-            btn_dwom.Visibility = b==true?Visibility.Visible: Visibility.Collapsed;
+            btn_start.IsEnabled = !b;
+            btn_start.Visibility = b == true ? Visibility.Collapsed : Visibility.Visible;
+            time_paner.Visibility = b == true ? Visibility.Visible : Visibility.Collapsed;
+            btn_dwom.Visibility = b == true ? Visibility.Visible : Visibility.Collapsed;
             ExTCP.isAnwser = b;//设置为开始作答状态
         }
 
@@ -592,7 +602,10 @@ namespace ExamTextServer
                 }
                 else
                 {
-                    TempScorelist[idx] = new Qlist() { anwser = qcItem.Q_title, anright = qcItem.Q_isCheack, ckTime = qcItem.ckTime };
+                    if (idx< TempScorelist.Count)
+                    {
+                        TempScorelist[idx] = new Qlist() { anwser = qcItem.Q_title, anright = qcItem.Q_isCheack, ckTime = qcItem.ckTime };
+                    }
                 }
                 idx++;
             }
@@ -683,10 +696,12 @@ namespace ExamTextServer
         {
             if (MessageBox.Show("已经认真检查好,确定交卷！", "操作提示!", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
-                //跳出倒计时 自动提交考试成绩
+                //交卷后跳出倒计时
                 IsBreak = true;
                 //恢复默认可提交试卷状态
                 IsReConServer = false;
+                Thread.Sleep(1000);
+                SubMit();
             }
         }
         /// <summary>
@@ -695,17 +710,19 @@ namespace ExamTextServer
         void SubMit()
         {
             ExTCP.isAnwser = false;//作答完毕
-            this.Dispatcher.BeginInvoke(new Action(() =>{
+            this.Dispatcher.Invoke(new Action(() =>
+            {
                 //计算得分
                 sbyte SumNum = (sbyte)QuseList.FindAll(s => s.score == 1).Count;
-                int rst = examCtl.Instans.Answer(Info.id,SumNum);
+                int rst = examCtl.Instans.Answer(Info.id, SumNum);
                 if (rst == 0)
                 {
                     ExTCP.DeQuseFile();//删除本地缓存
                     this.IsEnabled = false;
                     MessageBox.Show("交卷成功，请考生离开考场！", "考试结束");
                 }
-                else {
+                else
+                {
                     ExTCP.DeQuseFile();//删除本地缓存
                     this.IsEnabled = false;
                     MessageBox.Show("分数提交失败，请联系监考员处理！");
