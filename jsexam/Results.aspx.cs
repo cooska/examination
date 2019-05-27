@@ -52,7 +52,7 @@ namespace jsexam
             string qdate = string.IsNullOrEmpty(req.QueryString["start_date"]) == true ? "" : req.QueryString["start_date"];
             string kssj = string.Format("{0}-01-01 00:00:00", qdate);
             string jssj = string.Format("{0}-12-31 23:59:59", qdate);
-            qdate = qdate == "" ? "" : string.Format("and b.start_date >= '{0}' and b.start_date<='{1}'", kssj, jssj);
+            qdate = qdate == "" ? "" : string.Format(" and b.start_date >= '{0}' and b.start_date<='{1}'", kssj, jssj);
             string qsfz = string.IsNullOrEmpty(req.QueryString["user_card"]) == true ? "" : string.Format(" and b.user_card like '{0}%'", req.QueryString["user_card"]);
             string qname = string.IsNullOrEmpty(req.QueryString["user_name"]) == true ? "" : string.Format(" and b.user_name like '{0}%'", req.QueryString["user_name"]);
             //获取当前分页显示条数
@@ -92,15 +92,15 @@ namespace jsexam
            // return;
             string condtion = GetCondtion();
             string sql = @"select
-            (select module_name from module_info where id = (select exami_module from exam_layout where id = a.layout_id)) as module_name,
-            (select user_name from user_info where id =a.user_id ) as user_name,
-            (select user_sex from user_info where id = a.user_id) as user_sex,
-            a.user_card,
-            (select work_name from work_info where id = a.work_id) as work_name,
-            (select exami_name from exam_layout where id = a.layout_id ) as exami_name,
-            a.score from exami_info a";
+            (select module_name from module_info where id = (select exami_module from exam_layout where id = b.layout_id)) as module_name,
+            (select user_name from user_info where id =b.user_id ) as user_name,
+            (select user_sex from user_info where id = b.user_id) as user_sex,
+            b.user_card,
+            (select work_name from work_info where id = b.work_id) as work_name,
+            (select exami_name from exam_layout where id = b.layout_id ) as exami_name,
+            b.score from exami_info b";
             //计算统计总数，总分页数
-            DataTable Art_Table = DataCenter.Instans.SearchTb(string.Format("select count(id) as ct from exami_info {0}",condtion));
+            DataTable Art_Table = DataCenter.Instans.SearchTb(string.Format("select count(id) as ct from exami_info b {0}",condtion));
             int Datacount = int.Parse(Art_Table.Rows[0]["ct"].ToString());
             double dx = ((double)Datacount / EvPage);
             int SumPage = (int)Math.Ceiling(dx);//总页数

@@ -205,10 +205,10 @@ namespace ExamTextServer
                                     exam_id = Jsonitem.exam_id;
                                     if (On_NextExma != null)
                                     {
-                                        //函数执行顺序不能变 先执行下一场请求 再获取用户信息
                                         //删除当前试题缓存
-                                        On_NextExma();
                                         DeQuseFile();
+                                        //函数执行顺序不能变 先执行下一场请求 再获取用户信息
+                                        On_NextExma();
                                     }
                                     if (On_isGetUserInfo!=null)
                                     {

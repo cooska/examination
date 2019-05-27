@@ -334,11 +334,21 @@ namespace ExamTextServer
             var t = new TimeSpan(0, 0, 0, (int)fz);
             return string.Format("{0:00}:{1:00}:{2:00}", t.Hours, t.Minutes, t.Seconds);
         }
+        examTCP cc = new examTCP();
         void ActionTime()
         {
             IsBreak = false;
+            DateTime fiveM = DateTime.Now;
             //默认加载新时间
-            DateTime fiveM = DateTime.Parse(string.Format("00:{0}:01", examTCP.exam_time)); //DateTime.Now.AddMinutes(examTCP.exam_time);
+            try {
+                fiveM = DateTime.Parse(string.Format("00:{0}:01", examTCP.exam_time)); //DateTime.Now.AddMinutes(examTCP.exam_time);
+            }
+            catch (Exception ex)
+            {
+                cc.WriteErr(string.Format("{0}\r\n{1}", ex.Message, examTCP.exam_time));
+                 examTCP.exam_time = 50;
+                fiveM = DateTime.Parse(string.Format("00:{0}:01", examTCP.exam_time)); //DateTime.Now.AddMinutes(examTCP.exam_time);
+            }
             if (ExTCP.HasQuseFile)
             {
                 fiveM = DateTime.Parse(string.Format("00:{0}:{1}", fz, mz));
@@ -712,21 +722,26 @@ namespace ExamTextServer
             ExTCP.isAnwser = false;//作答完毕
             this.Dispatcher.Invoke(new Action(() =>
             {
-                //计算得分
-                sbyte SumNum = (sbyte)QuseList.FindAll(s => s.score == 1).Count;
-                int rst = examCtl.Instans.Answer(Info.id, SumNum);
-                if (rst == 0)
-                {
-                    ExTCP.DeQuseFile();//删除本地缓存
-                    this.IsEnabled = false;
-                    MessageBox.Show("交卷成功，请考生离开考场！", "考试结束");
+                try {
+                    //计算得分
+                    sbyte SumNum = (sbyte)QuseList.FindAll(s => s.score == 1).Count;
+                    int rst = examCtl.Instans.Answer(Info.id, SumNum);
+                    if (rst == 0)
+                    {
+                        ExTCP.DeQuseFile();//删除本地缓存
+                        this.IsEnabled = false;
+                        MessageBox.Show("交卷成功，请考生离开考场！", "考试结束");
+                    }
+                    else
+                    {
+                        MessageBox.Show("分数提交失败，请联系监考员处理！");
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    ExTCP.DeQuseFile();//删除本地缓存
-                    this.IsEnabled = false;
                     MessageBox.Show("分数提交失败，请联系监考员处理！");
                 }
+               
             }));
         }
     }

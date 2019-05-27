@@ -17,22 +17,22 @@ namespace jsexam.control
             get
             {
                 List<int> arr = new List<int>();
-                string sql = "select start_date  from exami_info order by start_date ASC limit 1 ";
+                string sql = "select DISTINCT(DATE_FORMAT(start_date, '%Y' )) start_date from exami_info order by start_date ASC";
                 DataTable tb = DataCenter.Instans.SearchTb(sql);
                 if (tb.Rows.Count==0)
                 {
                     return new List<int>() { DateTime.Now.Year};
                 }
-                DateTime MinTime =DateTime.Parse(tb.Rows[0][0].ToString());
-                DateTime NowTime = DateTime.Now;
-                int rst = NowTime.Year - MinTime.Year;
+                int MinTime = int.Parse(tb.Rows[0][0].ToString());
+                int NowTime = DateTime.Now.Year;
+                int rst = NowTime - MinTime;
                 if (rst==0)
                 {
-                    arr.Add(MinTime.Year);
+                    arr.Add(MinTime);
                     return arr;
                 }
-                arr.Add(MinTime.Year);
-                for (int i = 1; i < rst; i++)
+                arr.Add(MinTime);
+                for (int i = 1; i < tb.Rows.Count; i++)
                 {
                     arr.Add((arr[i - 1] + 1));
                 }
